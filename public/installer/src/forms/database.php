@@ -59,18 +59,31 @@ if (isset($_POST['feedDB'])) {
 
     try {
         $logs .= run_console('php artisan storage:link');
-        $logs .= run_console('php artisan migrate --seed --force');
-        $logs .= run_console('php artisan db:seed --class=ExampleItemsSeeder --force');
-        $logs .= run_console('php artisan db:seed --class=GeneralPermissionsSeeder --force');
-
-        wh_log($logs, 'debug');
-
-        wh_log('Feeding the Database successful', 'debug');
-        next_step();
     } catch (Throwable $th) {
-        wh_log('Feeding the Database failed', 'error');
-        send_error_message("Feeding the Database failed");
+        wh_log('storage:link failed: ' . $th->getMessage(), 'error');
     }
+
+    try {
+        $logs .= run_console('php artisan migrate --seed --force');
+    } catch (Throwable $th) {
+        wh_log('migrate --seed failed: ' . $th->getMessage(), 'error');
+    }
+
+    try {
+        $logs .= run_console('php artisan db:seed --class=ExampleItemsSeeder --force');
+    } catch (Throwable $th) {
+        wh_log('ExampleItemsSeeder failed: ' . $th->getMessage(), 'error');
+    }
+
+    try {
+        $logs .= run_console('php artisan db:seed --class=GeneralPermissionsSeeder --force');
+    } catch (Throwable $th) {
+        wh_log('GeneralPermissionsSeeder failed: ' . $th->getMessage(), 'error');
+    }
+
+    wh_log($logs, 'debug');
+    wh_log('Feeding the Database finished (errors ignored)', 'debug');
+    next_step();
 }
 
 ?>

@@ -220,5 +220,11 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
 
 
 
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', function () {
+    return view('app', [
+        'user' => Auth::user(),
+    ]);
+    })->name('home-react');
+
+     Route::get('/php/home', [HomeController::class, 'index'])->name('home');
 });

@@ -17,6 +17,7 @@ class InstallerLock
     public function handle(Request $request, Closure $next)
     {
         if (!file_exists(base_path()."/install.lock")){
+            //return redirect('/installer');
             return redirect('/installer');
         }
         return $next($request);
