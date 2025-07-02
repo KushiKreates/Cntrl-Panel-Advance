@@ -17,6 +17,7 @@ use App\Settings\ServerSettings;
 use App\Settings\PterodactylSettings;
 use App\Classes\PterodactylClient;
 use App\Settings\GeneralSettings;
+use Illuminate\Support\Facades\Schema; 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Client\Response;
@@ -254,49 +255,60 @@ class ServerController extends Controller
         }
     }
 
-    private function createServer(Request $request): ?Server
-    {
-        $product = Product::findOrFail($request->input('product'));
-        $egg = $product->eggs()->findOrFail($request->input('egg'));
-        $node = $this->findAvailableNode($request->input('location'), $product);
 
-        if (!$node) return null;
+private function createServer(Request $request): ?Server
+{
+    $product = Product::findOrFail($request->input('product'));
+    $egg = $product->eggs()->findOrFail($request->input('egg'));
+    $node = $this->findAvailableNode($request->input('location'), $product);
 
-        $server = $request->user()->servers()->create([
-            'name' => $request->input('name'),
-            'product_id' => $product->id,
-            'last_billed' => Carbon::now()
-        ]);
-
-        $allocationId = $this->pterodactyl->getFreeAllocationId($node);
-        if (!$allocationId) {
-            Log::error('No AllocationID found.', [
-                'server_id' => $server->id,
-                'node_id' => $node->id,
-            ]);
-            $server->delete();
-            return null;
-        }
-
-        $response = $this->pterodactyl->createServer($server, $egg, $allocationId, $request->input('egg_variables'));
-        if ($response->failed()) {
-            Log::error('Failed to create server on Pterodactyl', [
-                'server_id' => $server->id,
-                'status' => $response->status(),
-                'error' => $response->json()
-            ]);
-            $server->delete();
-            return null;
-        }
-
-        $serverAttributes = $response->json()['attributes'];
-        $server->update([
-            'pterodactyl_id' => $serverAttributes['id'],
-            'identifier' => $serverAttributes['identifier']
-        ]);
-
-        return $server;
+    if (!$node) return null;
+    
+    // Don't let Laravel automatically generate an ID
+    // Instead, use Str::uuid() to generate a proper UUID
+    $serverData = [
+        'id' => \Illuminate\Support\Str::uuid()->toString(), // This creates a proper UUID
+        'name' => $request->input('name'),
+        'product_id' => $product->id,
+        'last_billed' => Carbon::now(),
+    ];
+    
+    // If temp_id column exists in the table, add it
+    if (Schema::hasColumn('servers', 'temp_id')) {
+        $serverData['temp_id'] = 'STKM-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'), 0, 12);
     }
+    
+    $server = $request->user()->servers()->create($serverData);
+    
+    $allocationId = $this->pterodactyl->getFreeAllocationId($node);
+    if (!$allocationId) {
+        Log::error('No AllocationID found.', [
+            'server_id' => $server->id,
+            'node_id' => $node->id,
+        ]);
+        $server->delete();
+        return null;
+    }
+
+    $response = $this->pterodactyl->createServer($server, $egg, $allocationId, $request->input('egg_variables'));
+    if ($response->failed()) {
+        Log::error('Failed to create server on Pterodactyl', [
+            'server_id' => $server->id,
+            'status' => $response->status(),
+            'error' => $response->json()
+        ]);
+        $server->delete();
+        return null;
+    }
+
+    $serverAttributes = $response->json()['attributes'];
+    $server->update([
+        'pterodactyl_id' => $serverAttributes['id'],
+        'identifier' => $serverAttributes['identifier']
+    ]);
+
+    return $server;
+}
 
     private function handlePostCreation(User $user, Server $server): void
     {

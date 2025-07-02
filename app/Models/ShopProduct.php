@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Settings\GeneralSettings;
 use Hidehalo\Nanoid\Client;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use NumberFormatter;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\CausesActivity;
@@ -45,14 +46,19 @@ class ShopProduct extends Model
         'price' => 'float'
     ];
 
-    public static function boot()
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
     {
         parent::boot();
 
-        static::creating(function (ShopProduct $shopProduct) {
-            $client = new Client();
-
-            $shopProduct->{$shopProduct->getKeyName()} = $client->generateId($size = 21);
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
         });
     }
 

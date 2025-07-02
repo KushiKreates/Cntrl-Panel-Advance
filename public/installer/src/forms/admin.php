@@ -41,16 +41,21 @@ if (isset($_POST['createUser'])) {
         'Authorization: Bearer ' . $adminToken,
     ]);
     $response = curl_exec($ch);
-    $result = json_decode($response, true);
-    curl_close($ch);
 
-    if ($pass !== $repass) {
-        send_error_message("The Passwords did not match!");
+    if ($response === false || empty($response)) {
+        send_error_message("Failed to connect to the Pterodactyl API. Please check your network connection and API settings.");
+        exit();
+    }
+
+    $result = json_decode($response, true);
+
+    if ($result === null) {
+        send_error_message("Invalid response from the Pterodactyl API. Please check your API settings.");
         exit();
     }
 
     if (array_key_exists('errors', $result)) {
-        send_error_message("Could not find the user with pterodactyl ID" . $pteroID);
+        send_error_message("Could not find the user with Pterodactyl ID " . $pteroID);
         exit();
     }
 

@@ -109,13 +109,11 @@ class HomeController extends Controller
             $unit = $daysLeft < 1 ? ($hoursLeft < 1 ? null : __('hours')) : __('days');
         }
 
-        //$this->callhome(); TODO: Same as the function
-
-        // RETURN ALL VALUES
+        // RETURN ALL VALUES with additional user_role.
         return view('home')->with([
             'usage' => $usage,
             'credits' => $credits,
-            'useful_links_dashboard' => UsefulLink::where("position","like","%dashboard%")->get()->sortby("id"),
+            'useful_links_dashboard' => UsefulLink::where("position", "like", "%dashboard%")->get()->sortby("id"),
             'bg' => $bg,
             'boxText' => $boxText,
             'unit' => $unit,
@@ -124,7 +122,45 @@ class HomeController extends Controller
             'myDiscount' => PartnerDiscount::getDiscount(),
             'general_settings' => $general_settings,
             'website_settings' => $website_settings,
-            'referral_settings' => $referral_settings
+            'referral_settings' => $referral_settings,
+            'user_role' => Auth::user()->roles->pluck('name')->toArray()
+        ]);
+    }
+
+    public function react(GeneralSettings $general_settings, WebsiteSettings $website_settings, ReferralSettings $referral_settings)
+    {
+        $usage = Auth::user()->creditUsage();
+        $credits = Auth::user()->Credits();
+        $bg = '';
+        $boxText = '';
+        $unit = '';
+
+        /** Build our Time-Left-Box */
+        if ($credits > 0.01 and $usage > 0) {
+            $daysLeft = number_format($credits / ($usage / 30), 2, '.', '');
+            $hoursLeft = number_format($credits / ($usage / 30 / 24), 2, '.', '');
+
+            $bg = $this->getTimeLeftBoxBackground($daysLeft);
+            $boxText = $this->getTimeLeftBoxText($daysLeft, $hoursLeft);
+            $unit = $daysLeft < 1 ? ($hoursLeft < 1 ? null : __('hours')) : __('days');
+        }
+
+        // RETURN ALL VALUES with additional user_role.
+        return view('app')->with([
+            'usage' => $usage,
+            'credits' => $credits,
+            'user' => Auth::user(),
+            'useful_links_dashboard' => UsefulLink::where("position", "like", "%dashboard%")->get()->sortby("id"),
+            'bg' => $bg,
+            'boxText' => $boxText,
+            'unit' => $unit,
+            'numberOfReferrals' => DB::table('user_referrals')->where('referral_id', '=', Auth::user()->id)->count(),
+            'partnerDiscount' => PartnerDiscount::where('user_id', Auth::user()->id)->first(),
+            'myDiscount' => PartnerDiscount::getDiscount(),
+            'general_settings' => $general_settings,
+            'website_settings' => $website_settings,
+            'referral_settings' => $referral_settings,
+            'user_role' => Auth::user()->roles->pluck('name')->toArray()
         ]);
     }
 }

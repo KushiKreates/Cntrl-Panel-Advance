@@ -1,12 +1,11 @@
 {
-  "themes/default/js/app.js": {
-    "file": "assets/app-0fd5dfcd.js",
+  "resources/src/main.tsx": {
+    "file": "assets/main-Dj75JWyq.js",
+    "name": "main",
+    "src": "resources/src/main.tsx",
     "isEntry": true,
-    "src": "themes/default/js/app.js"
-  },
-  "themes/default/sass/app.scss": {
-    "file": "assets/app-26e8174e.css",
-    "isEntry": true,
-    "src": "themes/default/sass/app.scss"
+    "css": [
+      "assets/main-C8FiyuEF.css"
+    ]
   }
 }

@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Console\Commands;
 
 use App\Classes\PterodactylClient;
@@ -21,7 +22,7 @@ class MakeUserCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:user {--ptero_id=} {--password=}';
+    protected $signature = 'make:user {--ptero_id=} {--password=} {--force}';
 
     /**
      * The console command description.
@@ -50,7 +51,8 @@ class MakeUserCommand extends Command
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
         $ptero_id = $this->option('ptero_id') ?? $this->ask('Please specify your Pterodactyl ID.');
-        $password = $this->secret('password') ?? $this->ask('Please specify your password.');
+        $password = $this->option('password') ?? $this->secret('Please specify your password.');
+        $force = $this->option('force');
 
         // Validate user input
         $validator = Validator::make([
@@ -63,11 +65,10 @@ class MakeUserCommand extends Command
 
         if ($validator->fails()) {
             $this->error($validator->errors()->first());
-
             return 0;
         }
 
-        //TODO: Do something with response (check for status code and give hints based upon that)
+        // Get user from Pterodactyl
         $response = $this->pterodactyl->getUser($ptero_id);
 
         if (isset($response['errors'])) {
@@ -80,16 +81,38 @@ class MakeUserCommand extends Command
             if (isset($response['errors'][0]['detail'])) {
                 $this->error("detail: {$response['errors'][0]['detail']}");
             }
-
             return 0;
         }
-        $user = User::create([
-            'name' => $response['first_name'],
-            'email' => $response['email'],
-            'password' => Hash::make($password),
-            'referral_code' => $this->createReferralCode(),
-            'pterodactyl_id' => $response['id'],
-        ]);
+
+        // Check if user already exists with this email
+        $existingUser = User::where('email', $response['email'])->first();
+        
+        if ($existingUser) {
+            if (!$force) {
+                $this->error("A user with email {$response['email']} already exists.");
+                $this->info("Use --force option to update the existing user.");
+                return 0;
+            }
+            
+            // Update existing user
+            $this->info("Updating existing user with email {$response['email']}");
+            $existingUser->update([
+                'name' => $response['first_name'],
+                'password' => Hash::make($password),
+                'pterodactyl_id' => $response['id'],
+            ]);
+            
+            $user = $existingUser;
+        } else {
+            // Create new user
+            $user = User::create([
+                'name' => $response['first_name'],
+                'email' => $response['email'],
+                'password' => Hash::make($password),
+                'referral_code' => $this->createReferralCode(),
+                'pterodactyl_id' => $response['id'],
+            ]);
+        }
 
         $this->table(['Field', 'Value'], [
             ['ID', $user->id],
@@ -99,7 +122,11 @@ class MakeUserCommand extends Command
             ['Referral code', $user->referral_code],
         ]);
 
-        $user->syncRoles(1);
+        // Only sync roles if it's a new user or force option is used
+        if (!$existingUser || $force) {
+            $user->syncRoles(1);
+            $this->info("User assigned to admin role.");
+        }
 
         return 1;
     }

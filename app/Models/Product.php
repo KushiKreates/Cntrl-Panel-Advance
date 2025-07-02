@@ -24,17 +24,18 @@ class Product extends Model
             ->dontSubmitEmptyLogs();
     }
     public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $guarded = ['id'];
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 
-        static::creating(function (Product $product) {
-            $client = new Client();
-
-            $product->{$product->getKeyName()} = $client->generateId($size = 21);
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) \Illuminate\Support\Str::uuid();
+            }
         });
 
         static::deleting(function (Product $product) {

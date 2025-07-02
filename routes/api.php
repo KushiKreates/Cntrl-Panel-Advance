@@ -40,3 +40,6 @@ Route::middleware('api.token')->group(function () {
     Route::delete('/notifications/{user}/{notification}', [NotificationController::class, 'deleteOne']);
     Route::delete('/notifications/{user}', [NotificationController::class, 'delete']);
 });
+
+
+require __DIR__ . '/api-client.php';

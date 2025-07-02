@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
@@ -37,14 +36,20 @@ return [
 
     'guards' => [
         'web' => [
-            'driver' => 'session',
+            'driver'   => 'session',
             'provider' => 'users',
         ],
 
-        'api' => [
-            'driver' => 'token',
+        'sanctum' => [
+            'driver'   => 'sanctum',
             'provider' => 'users',
-            'hash' => false,
+        ],
+
+        // you can still keep the default api/token guard if you like
+        'api' => [
+            'driver'   => 'token',
+            'provider' => 'users',
+            'hash'     => false,
         ],
     ],
 

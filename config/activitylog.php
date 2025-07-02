@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
      * If set to false, no activities will be saved to the database.
      */
@@ -49,4 +48,20 @@ return [
      * Laravel's database.default will be used instead.
      */
     'database_connection' => env('ACTIVITY_LOGGER_DB_CONNECTION'),
+
+    /*
+     * Models with integer IDs that shouldn't be cast to UUIDs when logging
+     * This helps prevent type mismatches between models using integer IDs
+     * and the activity_log table expecting UUIDs
+     */
+    'models_with_integer_ids' => [
+        \App\Models\User::class,
+        // Add other models with integer IDs here
+    ],
+
+    /*
+     * If set to true, will convert numeric IDs to strings
+     * This can help with compatibility issues between integer IDs and UUID columns
+     */
+    'convert_ids_to_strings' => true,
 ];

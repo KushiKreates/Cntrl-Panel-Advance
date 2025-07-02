@@ -88,5 +88,17 @@ class AppServiceProvider extends ServiceProvider
         } catch (Exception $e) {
             Log::error("Couldnt find useful_links. Probably the installation is not completet. " . $e);
         }
+
+        \Spatie\Activitylog\Models\Activity::creating(function ($activity) {
+            // Convert subject_id to string if needed
+            if ($activity->subject_id && is_numeric($activity->subject_id) && config('activitylog.convert_ids_to_strings', true)) {
+                $activity->subject_id = (string) $activity->subject_id;
+            }
+            
+            // Convert causer_id to string if needed
+            if ($activity->causer_id && is_numeric($activity->causer_id) && config('activitylog.convert_ids_to_strings', true)) {
+                $activity->causer_id = (string) $activity->causer_id;
+            }
+        });
     }
 }

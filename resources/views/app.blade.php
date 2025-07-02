@@ -11,6 +11,15 @@
          
          <!-- Server Side Props  -->
 
+         <script>
+            window.alertData = {
+                enabled: {{ $general_settings->alert_enabled ? 'true' : 'false' }},
+                type: "{{ $general_settings->alert_type }}",
+                message: `{!! $general_settings->alert_message !!}`
+            }
+        </script>
+
+
          <!-- Auth sextion --> 
          <script>
             window.authUser = @json($user);
@@ -18,6 +27,22 @@
             window.logoUrl = "{{ \Illuminate\Support\Facades\Storage::disk('public')->exists('logo.ico') ? asset('storage/logo.ico') : asset('logo.ico') }}";
 
         </script>
+
+        <!-- DO NOT REMOVE! BREAKS THE WHOLE APPLICATION -->
+         <script>
+            window.Laravel = {
+            csrfToken: '{{ csrf_token() }}',
+            user: @json(Auth::user()),
+            app: @json(config('app'))
+            }
+        </script>
+
+        <!-- User's Role --> 
+        <script>
+            window.userRoles = @json($user_role);
+         </script>
+
+         
 
 
             

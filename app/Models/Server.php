@@ -10,6 +10,7 @@ use GuzzleHttp\Promise\PromiseInterface;
 use Hidehalo\Nanoid\Client;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Client\Response;
@@ -23,21 +24,21 @@ class Server extends Model
 {
     use HasFactory;
     use LogsActivity;
-
-    private PterodactylClient $pterodactyl;
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logFillable()
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
-    }
+    use HasUuids;
 
     /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
      * @var bool
      */
     public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
 
     /**
      * @var string[]
@@ -60,7 +61,9 @@ class Server extends Model
         "product_id",
         "pterodactyl_id",
         "last_billed",
-        "canceled"
+        "canceled",
+        "temp_id",
+        "id", // added a new id
     ];
 
     /**
@@ -69,6 +72,16 @@ class Server extends Model
     protected $casts = [
         'suspended' => 'datetime',
     ];
+
+    private PterodactylClient $pterodactyl;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function __construct()
     {
