@@ -1,9 +1,12 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,274 +15,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import {
   Home,
   Server,
-  Coins,
   LogOut,
   ChevronDown,
-  ChevronRight,
   Menu,
   X,
   Settings,
-  User,
-  ChevronLeft,
+  User as UserIcon,
   Moon,
   Sun,
-  Plus,
-  Users,
-  Shield,
+  Coins,
+  Crown,
   BarChart3,
-  FileText,
   Bell,
-  MessageSquare,
-  Flag,
-  CreditCard,
   Search,
-  Zap,
-  Activity,
-  Database,
-  Lock,
-  HelpCircle,
   Command,
-  Users2Icon,
-  ShoppingBasket,
-  Sliders,
-  Ticket,
-  Gamepad,
-  Link,
-  ClipboardList,
-  UserCheck,
-  UserX,
-  LucideHand,
-  LucideDollarSign,
-  LucideToolCase,
+  LucideMonitorUp,
+  LucideKeySquare,
+  LucideShoppingBag,
+  LucideHandCoins,
+  CogIcon,
+  LucideRadio,
+  LucideServerCog,
+  LucideStore,
+  DollarSign,
 } from "lucide-react";
 import ssr from "@/lib/ssr";
-
-// Get authenticated user via SSR
-const authUser = ssr.get("authUser") || {};
-const user = {
-  name: authUser.name || "Unknown",
-  email: authUser.email || "no-email@example.com",
-  credits: authUser.credits || 0,
-  serverCount: authUser.server_count || 0,
-  serverLimit: authUser.server_limit || 0,
-  avatar:
-    authUser.avatar ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      authUser.name || "User"
-    )}&background=6366f1&color=fff&size=128`,
-  status: authUser.status || "offline",
-  unreadNotifications: authUser.unreadNotifications || 0,
-};
-
-// Permissions mapping based on the backend PermissionGroups
-const userPermissions = {
-  TICKET_PERMISSIONS: true,
-  OVERVIEW_PERMISSIONS: true,
-  TICKET_ADMIN_PERMISSIONS: true,
-  TICKET_BLACKLIST_PERMISSIONS: true,
-  ROLES_PERMISSIONS: true,
-  SETTINGS_PERMISSIONS: true,
-  API_PERMISSIONS: true,
-  USERS_PERMISSIONS: true,
-  SERVERS_PERMISSIONS: true,
-  PRODUCTS_PERMISSIONS: true,
-  STORE_PERMISSIONS: true,
-  VOUCHERS_PERMISSIONS: true,
-  PARTNERS_PERMISSIONS: true,
-  COUPONS_PERMISSIONS: true,
-  USEFUL_LINKS_PERMISSIONS: true,
-  PAYMENTS_PERMISSIONS: true,
-  LOGS_PERMISSIONS: true,
-};
-
-// Application settings
-const appSettings = {
-  ticketEnabled: true,
-  storeEnabled: true,
-};
-
-// Navigation items mapped from main.blade.php
-const navItems = [
-  {
-    title: "User",
-    items: [
-      {
-        title: "Dashboard",
-        href: "/home",
-        icon: Home,
-        description: "View your dashboard"
-      },
-      {
-        title: "Servers",
-        href: "/servers",
-        icon: Server,
-        badge: `${user.serverCount} / ${user.serverLimit}`,
-        badgeVariant: "secondary",
-        description: "Manage your servers"
-      },
-      {
-        title: "Store",
-        href: "/store",
-        icon: Coins,
-        description: "Purchase items and credits",
-        condition: appSettings.storeEnabled
-      },
-      {
-        title: "Support Tickets",
-        href: "/ticket",
-        icon: Ticket,
-        description: "Get help with issues",
-        condition: appSettings.ticketEnabled && userPermissions.TICKET_PERMISSIONS
-      }
-    ],
-  },
-  {
-    title: "Administration",
-    adminOnly: true,
-    condition: Object.values(userPermissions).some(perm => perm),
-    items: [
-      {
-        title: "Overview",
-        href: "/admin/overview",
-        icon: Home,
-        description: "Admin dashboard",
-        condition: userPermissions.OVERVIEW_PERMISSIONS
-      },
-      {
-        title: "Ticket List",
-        href: "/admin/ticket",
-        icon: Ticket,
-        description: "Manage support tickets",
-        condition: userPermissions.TICKET_ADMIN_PERMISSIONS
-      },
-      {
-        title: "Ticket Blacklist",
-        href: "/admin/ticket/blacklist",
-        icon: UserX,
-        description: "Manage blacklisted users",
-        condition: userPermissions.TICKET_BLACKLIST_PERMISSIONS
-      },
-      {
-        title: "Role Management",
-        href: "/admin/roles",
-        icon: UserCheck,
-        description: "Manage user roles",
-        condition: userPermissions.ROLES_PERMISSIONS
-      },
-      {
-        title: "Settings",
-        href: "/admin/settings",
-        icon: LucideToolCase,
-        description: "System settings",
-        condition: userPermissions.SETTINGS_PERMISSIONS
-      },
-      {
-        title: "Application API",
-        href: "/admin/api",
-        icon: Gamepad,
-        description: "API management",
-        condition: userPermissions.API_PERMISSIONS
-      }
-    ],
-  },
-  {
-    title: "Management",
-    adminOnly: true,
-    condition: userPermissions.USERS_PERMISSIONS || userPermissions.SERVERS_PERMISSIONS || userPermissions.PRODUCTS_PERMISSIONS,
-    items: [
-      {
-        title: "Users",
-        href: "/admin/users",
-        icon: Users,
-        description: "Manage users",
-        condition: userPermissions.USERS_PERMISSIONS
-      },
-      {
-        title: "Servers",
-        href: "/admin/servers",
-        icon: Server,
-        description: "Manage servers",
-        condition: userPermissions.SERVERS_PERMISSIONS
-      },
-      {
-        title: "Products",
-        href: "/admin/products",
-        icon: Sliders,
-        description: "Manage products",
-        condition: userPermissions.PRODUCTS_PERMISSIONS
-      },
-      {
-        title: "Store",
-        href: "/admin/store",
-        icon: ShoppingBasket,
-        description: "Manage store",
-        condition: userPermissions.STORE_PERMISSIONS
-      },
-      {
-        title: "Vouchers",
-        href: "/admin/vouchers",
-        icon: CreditCard,
-        description: "Manage vouchers",
-        condition: userPermissions.VOUCHERS_PERMISSIONS
-      },
-      {
-        title: "Partners",
-        href: "/admin/partners",
-        icon: LucideHand,
-        description: "Manage partners",
-        condition: userPermissions.PARTNERS_PERMISSIONS
-      },
-      {
-        title: "Coupons",
-        href: "/admin/coupons",
-        icon: Ticket,
-        description: "Manage coupons",
-        condition: userPermissions.COUPONS_PERMISSIONS
-      }
-    ]
-  },
-  {
-    title: "Other",
-    adminOnly: true,
-    condition: userPermissions.USEFUL_LINKS_PERMISSIONS,
-    items: [
-      {
-        title: "Useful Links",
-        href: "/admin/usefullinks",
-        icon: Link,
-        description: "Manage useful links",
-        condition: userPermissions.USEFUL_LINKS_PERMISSIONS
-      }
-    ]
-  },
-  {
-    title: "Logs",
-    adminOnly: true,
-    condition: userPermissions.PAYMENTS_PERMISSIONS || userPermissions.LOGS_PERMISSIONS,
-    items: [
-      {
-        title: "Payments",
-        href: "/admin/payments",
-        icon: LucideDollarSign,
-        description: "View payment logs",
-        badge: "New",
-        badgeVariant: "success",
-        condition: userPermissions.PAYMENTS_PERMISSIONS
-      },
-      {
-        title: "Activity Logs",
-        href: "/admin/activitylogs",
-        icon: ClipboardList,
-        description: "View activity logs",
-        condition: userPermissions.LOGS_PERMISSIONS
-      }
-    ]
-  }
-];
 
 // Theme context
 const ThemeContext = createContext({
@@ -292,404 +55,210 @@ const SidebarContext = createContext({
   isCollapsed: false,
   toggleSidebar: () => {},
   isMobile: false,
+  closeMobileSidebar: () => {},
 });
 
-// Enhanced sidebar item component with Vercel-like styling
-const SidebarItem = ({ item, isCollapsed, level = 0 }) => {
-  const currentPath = window.location.pathname || "/dashboard";
-  const isActive = currentPath === item.href;
+// Search functionality hook
+const useSearch = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const hasChildren = item.subItems && item.subItems.length > 0;
-
-  // Check if any children are active to auto-expand parent
+  
   useEffect(() => {
-    if (hasChildren && item.subItems.some(subItem => currentPath === subItem.href)) {
-      setIsOpen(true);
-    }
-  }, [currentPath, hasChildren, item.subItems]);
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+  
+  return {
+    isOpen,
+    openSearch: () => setIsOpen(true),
+    closeSearch: () => setIsOpen(false),
+  };
+};
 
-  const getBadgeVariant = (variant) => {
-    switch (variant) {
-      case "destructive": return "destructive";
-      case "secondary": return "secondary";
-      case "outline": return "outline";
-      case "success": return "default";
-      default: return "default";
+// Get user data
+const getUserData = () => {
+  const authUser = ssr.get("authUser") || {};
+  const userRoles = ssr.get("userRoles") || [];
+  
+  return {
+    name: authUser.name || "Guest User",
+    email: authUser.email || "guest@example.com",
+    credits: authUser.credits || 0,
+    coins: authUser.coins || 0,
+    serverCount: authUser.server_count || 0,
+    serverLimit: authUser.server_limit || 0,
+    rank: authUser.rank || "user",
+    avatar: authUser.avatar || 
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.name || "User")}&background=7c3aed&color=fff&size=128`,
+    status: "online",
+    unreadNotifications: 3,
+    isAdmin: userRoles.some(role => role.toLowerCase().includes("admin")),
+  };
+};
+
+// Search Modal Component
+const SearchModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-zinc-200 dark:border-zinc-800" 
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center border-b border-zinc-200 dark:border-zinc-800 p-4">
+          <Search className="h-5 w-5 text-zinc-400 mr-3" />
+          <input
+            type="text"
+            className="flex-1 bg-transparent border-0 focus:ring-0 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-base outline-none"
+            placeholder="Type to search..."
+            autoFocus
+          />
+          <div className="flex items-center border border-zinc-200 dark:border-zinc-700 rounded px-1.5 py-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="mr-0.5">Esc</span>
+          </div>
+        </div>
+        <div className="p-4 text-center text-zinc-500 dark:text-zinc-400">
+          <p>Start typing to search...</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Sidebar Item Component
+const SidebarItem = ({ item, isActive, isCollapsed, onClick, children }) => {
+  const { closeMobileSidebar } = useContext(SidebarContext);
+  
+  const handleClick = (e) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+    if (item.href) {
+      closeMobileSidebar();
     }
   };
 
-  // Collapsed state item (icon only)
-  if (isCollapsed && level === 0) {
+  if (isCollapsed) {
     return (
-      <TooltipProvider>
-        <Tooltip delayDuration={200}>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "w-full h-9 mb-1 relative group",
-                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground",
-                !isActive && "hover:bg-accent/50 hover:text-foreground"
-              )}
-              onClick={() => {
-                if (hasChildren) {
-                  setIsOpen(!isOpen);
-                } else {
-                  console.log(`Navigate to ${item.href}`);
-                }
-              }}
+      <Link 
+        to={item.href || "#"}
+        className="block w-full"
+        onClick={handleClick}
+      >
+        <Button
+          variant={isActive ? "default" : "ghost"}
+          size="icon"
+          className={cn(
+            "w-full h-11 relative mb-1",
+            isActive 
+              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" 
+              : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          )}
+        >
+          <item.icon className={cn("h-5 w-5", item.iconColor)} />
+          {item.badge && (
+            <Badge
+              className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-[10px]"
             >
-              <item.icon className={cn("h-4 w-4", isActive && "text-primary")} />
-              {item.badge && (
-                <Badge
-                  variant={getBadgeVariant(item.badgeVariant)}
-                  className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] flex items-center justify-center"
-                >
-                  {item.badge.length > 2 ? "•" : item.badge}
-                </Badge>
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">{item.title}</span>
-              {item.shortcut && (
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                  {item.shortcut}
-                </kbd>
-              )}
-            </div>
-            {item.description && (
-              <p className="text-xs text-muted-foreground">{item.description}</p>
-            )}
-            {item.badge && (
-              <Badge variant={getBadgeVariant(item.badgeVariant)} className="w-fit">
-                {item.badge}
-              </Badge>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+              {item.badge}
+            </Badge>
+          )}
+        </Button>
+      </Link>
     );
   }
 
-  // Expanded state item (full width)
   return (
-    <div className="space-y-px">
+    <div className="w-full">
       <Button
-        variant="ghost"
+        variant={isActive ? "default" : "ghost"}
         className={cn(
-          "w-full justify-start h-9 px-2 group text-sm",
-          level > 0 && "ml-4 w-[calc(100%-1rem)]",
-          isActive ? "bg-primary/8 text-primary font-medium" : "text-muted-foreground font-normal",
-          !isActive && "hover:bg-accent/40 hover:text-foreground"
+          "w-full justify-start h-10 px-3 text-base rounded-lg",
+          isActive
+            ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" 
+            : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
         )}
-        onClick={() => {
-          if (hasChildren) {
-            setIsOpen(!isOpen);
-          } else {
-            console.log(`Navigate to ${item.href}`);
-          }
-        }}
+        onClick={handleClick}
+        asChild={!!item.href && !onClick}
       >
-        <div className="flex items-center w-full">
-          <item.icon className={cn("h-4 w-4 mr-2", isActive ? "text-primary" : "text-muted-foreground")} />
-          <span className={cn("flex-1 text-left truncate", isActive && "font-medium")}>{item.title}</span>
-          
-          <div className="flex items-center gap-2">
-            {item.shortcut && !hasChildren && (
-              <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                {item.shortcut}
-              </kbd>
-            )}
-            
-            {item.badge && (
-              <Badge variant={getBadgeVariant(item.badgeVariant)} className="text-[10px] py-0 px-1">
-                {item.badge}
-              </Badge>
-            )}
-            
-            {hasChildren && (
+        {item.href && !onClick ? (
+          <Link to={item.href}>
+            <div className="flex items-center w-full">
+              <item.icon className={cn("h-5 w-5 mr-2", item.iconColor)} />
+              <span className="flex-1 text-left font-medium">{item.title}</span>
+              {item.badge && <Badge className="ml-auto">{item.badge}</Badge>}
+              {onClick && (
+                <ChevronDown className={cn(
+                  "h-4 w-4 transition-transform",
+                  isActive ? "transform rotate-180" : ""
+                )} />
+              )}
+            </div>
+          </Link>
+        ) : (
+          <div className="flex items-center w-full">
+            <item.icon className={cn("h-5 w-5 mr-2", item.iconColor)} />
+            <span className="flex-1 text-left font-medium">{item.title}</span>
+            {item.badge && <Badge className="ml-auto">{item.badge}</Badge>}
+            {onClick && (
               <ChevronDown className={cn(
-                "h-3.5 w-3.5 text-muted-foreground transition-transform duration-200",
-                isOpen && "rotate-180"
+                "h-4 w-4 transition-transform",
+                isActive ? "transform rotate-180" : ""
               )} />
             )}
           </div>
-        </div>
+        )}
       </Button>
-      
-      {hasChildren && isOpen && (
-        <div className="space-y-px ml-2 pl-2 border-l border-border/30">
-          {item.subItems.map((subItem) => (
-            <SidebarItem key={subItem.href} item={{...subItem, icon: subItem.icon || item.icon}} isCollapsed={false} level={level + 1} />
-          ))}
-        </div>
-      )}
+      {children}
     </div>
   );
 };
 
-// Enhanced user profile component
-const UserProfile = ({ isCollapsed }) => {
+// Theme Toggle Component
+const ThemeToggle = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  
-  if (isCollapsed) {
-    return (
-      <div className="flex flex-col items-center p-2 mt-auto">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 relative group p-0">
-              <div className="relative">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="h-8 w-8 rounded-full ring-1 ring-border group-hover:ring-primary/30 transition-all duration-200"
-                />
-                <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 bg-green-500 rounded-full border-2 border-background"></div>
-                {user.unreadNotifications > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold text-white">
-                    {user.unreadNotifications}
-                  </div>
-                )}
-              </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" side="right" forceMount>
-            <DropdownMenuLabel className="flex items-center gap-3 p-3">
-              <img src={user.avatar} alt={user.name} className="h-9 w-9 rounded-full" />
-              <div>
-                <p className="font-medium text-sm">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-              <User className="mr-2 h-3.5 w-3.5" />
-              Profile Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-sm py-1.5 relative">
-              <Bell className="mr-2 h-3.5 w-3.5" />
-              Notifications
-              {user.unreadNotifications > 0 && (
-                <Badge variant="destructive" className="ml-auto">
-                  {user.unreadNotifications}
-                </Badge>
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer text-sm py-1.5">
-              {theme === "dark" ? (
-                <>
-                  <Sun className="mr-2 h-3.5 w-3.5" />
-                  Light Mode
-                </>
-              ) : (
-                <>
-                  <Moon className="mr-2 h-3.5 w-3.5" />
-                  Dark Mode
-                </>
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-              <HelpCircle className="mr-2 h-3.5 w-3.5" />
-              Help & Support
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-sm py-1.5 text-red-600 focus:text-red-600">
-              <LogOut className="mr-2 h-3.5 w-3.5" />
-              Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-2 mt-auto border-t border-border/40">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-full justify-start h-12 px-2 py-1.5 group hover:bg-accent/40 rounded-md">
-            <div className="flex items-center space-x-3 w-full">
-              <div className="relative">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="h-8 w-8 rounded-full ring-1 ring-border group-hover:ring-primary/30 transition-all duration-200"
-                />
-                <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 bg-green-500 rounded-full border-2 border-background"></div>
-                {user.unreadNotifications > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold text-white">
-                    {user.unreadNotifications}
-                  </div>
-                )}
-              </div>
-              <div className="text-left overflow-hidden flex-1">
-                <p className="text-sm font-medium truncate">{user.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-              </div>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground opacity-50 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <div className="flex items-center justify-between px-3 pt-2 pb-1">
-            <div className="space-y-0.5">
-              <p className="font-medium text-sm">{user.name}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              {user.credits.toLocaleString()} credits
-            </Badge>
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-            <User className="mr-2 h-3.5 w-3.5" />
-            Profile Settings
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5 relative">
-            <Bell className="mr-2 h-3.5 w-3.5" />
-            Notifications
-            {user.unreadNotifications > 0 && (
-              <Badge variant="destructive" className="ml-auto">
-                {user.unreadNotifications}
-              </Badge>
-            )}
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-            <Settings className="mr-2 h-3.5 w-3.5" />
-            Preferences
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer text-sm py-1.5">
-            {theme === "dark" ? (
-              <>
-                <Sun className="mr-2 h-3.5 w-3.5" />
-                Light Mode
-              </>
-            ) : (
-              <>
-                <Moon className="mr-2 h-3.5 w-3.5" />
-                Dark Mode
-              </>
-            )}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-            <HelpCircle className="mr-2 h-3.5 w-3.5" />
-            Help & Support
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5 text-red-600 focus:text-red-600">
-            <LogOut className="mr-2 h-3.5 w-3.5" />
-            Sign Out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-};
-
-// Enhanced Quick Actions component
-const QuickActions = ({ isCollapsed }) => {
-  if (isCollapsed) {
-    return (
-      <div className="px-2 py-2 border-b border-border/30">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <TooltipProvider>
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger asChild>
-                  <Button size="icon" className="w-full h-9 bg-primary/90 hover:bg-primary shadow-sm">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="text-xs">
-                  <p>Quick Actions</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" className="w-56">
-            <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-              <Server className="mr-2 h-3.5 w-3.5" />
-              Create New Server
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-              <Ticket className="mr-2 h-3.5 w-3.5" />
-              Open Support Ticket
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-              <CreditCard className="mr-2 h-3.5 w-3.5" />
-              Redeem Voucher Code
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-2 border-b border-border/30">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button className="w-full justify-between bg-primary/90 hover:bg-primary shadow-sm h-9 px-3 text-sm">
-            <div className="flex items-center gap-2">
-              <Plus className="h-3.5 w-3.5" />
-              <span>Quick Actions</span>
-            </div>
-            <ChevronDown className="h-3.5 w-3.5 opacity-70" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-            <Server className="mr-2 h-3.5 w-3.5" />
-            Create New Server
-            <span className="ml-auto text-xs text-muted-foreground">{user.serverCount}/{user.serverLimit}</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-            <Ticket className="mr-2 h-3.5 w-3.5" />
-            Open Support Ticket
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-            <CreditCard className="mr-2 h-3.5 w-3.5" />
-            Redeem Voucher Code
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-            <Coins className="mr-2 h-3.5 w-3.5" />
-            Purchase Credits
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+    <Switch
+      checked={theme === "dark"}
+      onCheckedChange={toggleTheme}
+      className="data-[state=checked]:bg-zinc-900 dark:data-[state=checked]:bg-zinc-100"
+    />
   );
 };
 
 // Main sidebar layout component
 export default function SidebarLayout({ children }) {
-  const app = ssr.get("App");
-  const Logo = ssr.get("logoUrl");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [theme, setTheme] = useState("dark");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState(null);
   
-  // Check admin status based on window.userRoles - more inclusive check
-  const isAdmin = window.userRoles && 
-    (window.userRoles.includes("admin") || 
-     window.userRoles.includes("Admin") || 
-     window.userRoles.includes("ADMIN") || 
-     window.userRoles.some(role => role.toLowerCase().includes("admin")));
+  const { isOpen: isSearchOpen, openSearch, closeSearch } = useSearch();
+  const location = useLocation();
+  const user = getUserData();
   
-  const [activePath, setActivePath] = useState("/dashboard");
-
-  // Check if mobile
+  // Check device size
   useEffect(() => {
     const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      // Auto-collapse sidebar on medium screens
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      // Auto-collapse on tablets
       if (window.innerWidth < 1024 && window.innerWidth >= 768) {
         setIsCollapsed(true);
       }
@@ -700,319 +269,454 @@ export default function SidebarLayout({ children }) {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
+  // Initialize theme
+  useEffect(() => {
+    const darkModePreference = localStorage.getItem("dark-mode") === "true";
+    setTheme(darkModePreference ? "dark" : "light");
+    document.documentElement.classList.toggle("dark", darkModePreference);
+  }, []);
+
   // Toggle theme
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
+    localStorage.setItem("dark-mode", newTheme === "dark");
   };
-
-  // Initialize theme
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
-
-  // Toggle sidebar collapse
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
+  
   // Get current page title
   const getCurrentPageTitle = () => {
-    const currentPath = window.location.pathname || "/dashboard";
-    for (const section of navItems) {
-      for (const item of section.items) {
-        if (item.condition !== false && item.href === currentPath) return item.title;
-        if (item.subItems) {
-          for (const subItem of item.subItems) {
-            if (subItem.condition !== false && subItem.href === currentPath) return subItem.title;
-          }
-        }
-      }
-    }
+    if (location.pathname.startsWith("/home")) return "Dashboard";
+    if (location.pathname.startsWith("/home/store")) return "Store";
+    if (location.pathname.startsWith("/home/servers")) return "Servers";
+    if (location.pathname.startsWith("/ticket")) return "Support";
+    if (location.pathname.startsWith("/admin")) return "Admin";
+    if (location.pathname.startsWith("/broadcast/india")) return "India Broadcast";
+    if (location.pathname.startsWith("/broadcast/uk")) return "UK Broadcast";
     return "Dashboard";
   };
-
-  // Filter navigation items based on conditions and admin status from window.userRoles
-  const filteredNavItems = navItems
-    .filter(section => {
-      // If user is admin, show all admin sections
-      if (isAdmin && section.adminOnly) return true;
-      // Otherwise filter as normal
-      return (section.condition !== false) && (!section.adminOnly || isAdmin);
-    })
-    .map(section => ({
-      ...section,
-      items: section.items.filter(item => item.condition !== false)
-    }))
-    .filter(section => section.items.length > 0);
-
-  // Mobile layout
-  if (isMobile) {
+  
+  // Get current active tab
+  // Set the active tab in the sidebar based on the current URL path
+  const getCurrentTab = () => {
+    if (location.pathname === "/home") return "home";
+    if (location.pathname === "/home/store") return "store";
+    if (location.pathname === "/servers") return "panel";
+    if (location.pathname === "/home/servers") return "products";
+    if (location.pathname === "/shop") return "coinshop";
+    if (location.pathname === "/earn") return "earn";
+    if (location.pathname === "/profile") return "profile";
+    if (location.pathname.startsWith("/broadcast/india")) return "broadcast-india";
+    if (location.pathname.startsWith("/broadcast/uk")) return "broadcast-uk";
+    if (location.pathname.startsWith("/admin")) return "admin";
+    return "";
+  };
+  
+  const activeTab = getCurrentTab();
+  
+  // Close mobile sidebar
+  const closeMobileSidebar = () => {
+    if (isMobile && isMobileOpen) {
+      setIsMobileOpen(false);
+    }
+  };
+  
+  // User Avatar
+  const UserAvatar = ({ size = "md" }) => {
+    const sizes = {
+      sm: "h-6 w-6",
+      md: "h-9 w-9",
+      lg: "h-10 w-10"
+    };
+    
+    const initials = user.name
+      .split(" ")
+      .map(part => part[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+    
     return (
-      <ThemeContext.Provider value={{ theme, toggleTheme }}>
-        <div className="flex h-screen bg-background text-foreground">
-          {/* Mobile header */}
-          <div className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b h-14 flex items-center px-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="h-8 w-8 text-muted-foreground"
-            >
-              {isMobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
-            <div className="ml-3 flex items-center">
-              <div className="h-7 w-7 bg-primary/10 rounded-md flex items-center justify-center mr-2">
-                <img 
-                  src={app?.logoUrl || window.logoUrl} 
-                  alt="Logo" 
-                  className="h-4 w-4"
-                />
-              </div>
-              <h1 className="font-medium text-sm">{getCurrentPageTitle()}</h1>
-            </div>
-            <div className="ml-auto flex items-center gap-1">
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                <Search className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground relative">
-                <Bell className="h-4 w-4" />
-                {user.unreadNotifications > 0 && (
-                  <div className="absolute top-1.5 right-1.5 h-1.5 w-1.5 bg-red-500 rounded-full"></div>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 text-muted-foreground">
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-
-          {/* Mobile sidebar overlay */}
-          {isMobileOpen && (
-            <div
-              className="fixed inset-0 bg-black/50 z-40 mt-14"
-              onClick={() => setIsMobileOpen(false)}
-            />
-          )}
-
-          {/* Mobile sidebar */}
-          <div
-            className={cn(
-              "fixed top-14 left-0 bottom-0 z-50 w-64 bg-background border-r transition-transform duration-200 ease-out",
-              isMobileOpen ? "translate-x-0" : "-translate-x-full"
-            )}
-          >
-            <div className="flex flex-col h-full">
-              <QuickActions isCollapsed={false} />
-              <ScrollArea className="flex-1">
-                <nav className="py-2">
-                  {filteredNavItems.map((section, idx) => (
-                    <div key={section.title} className={cn("py-2", idx > 0 && "mt-1")}>
-                      <h3 className="px-3 text-xs font-medium text-muted-foreground mb-1">
-                        {section.title}
-                      </h3>
-                      <div className="space-y-px">
-                        {section.items.map((item) => (
-                          <SidebarItem key={item.href} item={item} isCollapsed={false} />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </nav>
-              </ScrollArea>
-              <UserProfile isCollapsed={false} />
-            </div>
-          </div>
-
-          {/* Main content */}
-          <div className="flex-1 pt-14">
-            <main className="p-4 h-full overflow-auto">
-              {children || (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center px-4">
-                    <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Command className="h-6 w-6 text-primary" />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">Welcome to your Control Panel</h2>
-                    <p className="text-muted-foreground text-sm">
-                      Select an item from the menu to get started with managing your infrastructure.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </main>
-          </div>
-        </div>
-      </ThemeContext.Provider>
+      <Avatar className={sizes[size]}>
+        <AvatarImage src={user.avatar} alt={user.name} />
+        <AvatarFallback className={cn(
+          "text-xs font-medium",
+          user.rank === "premium"
+            ? "bg-amber-600 text-white"
+            : user.isAdmin
+              ? "bg-red-600 text-white"
+              : "bg-zinc-600 text-white"
+        )}>
+          {initials}
+        </AvatarFallback>
+      </Avatar>
     );
+  };
+  
+  // Navigation items
+  const navItems = [
+    {
+      title: "Dashboard",
+      href: "/home",
+      icon: Home,
+      isActive: activeTab === "home"
+    },
+    {
+      title: "Store",
+      href: "/home/store",
+      icon: LucideStore,
+      isActive: activeTab === "store"
+    },
+    
+    
+  ];
+  
+  // Add admin panel if user is admin
+  if (user.isAdmin) {
+    navItems.push({
+      title: "Admin",
+      href: "/admin",
+      icon: CogIcon,
+      iconColor: "text-red-500",
+      isActive: activeTab === "admin"
+    });
   }
 
-  // Desktop layout
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <SidebarContext.Provider value={{ isCollapsed, toggleSidebar, isMobile }}>
-        <div className="flex h-screen overflow-hidden bg-background text-foreground">
-          {/* Desktop Sidebar */}
-          <aside
-            className={cn(
-              "flex flex-col bg-background border-r transition-all duration-200 ease-out",
-              isCollapsed ? "w-[60px]" : "w-[240px]"
-            )}
-          >
-            {/* Logo and collapse button */}
-            <div className="flex items-center justify-between px-2 h-14 border-b">
-              {!isCollapsed && (
-                <div className="flex items-center gap-2 pl-1.5">
-                  <div className="h-7 w-7 bg-primary/10 rounded-md flex items-center justify-center">
-                    <img 
-                      src={app?.logoUrl || window.logoUrl} 
-                      alt="Logo" 
-                      className="h-4 w-4"
-                    />
-                  </div>
-                  <h1 className="text-sm font-semibold tracking-tight">
-                    {app?.name || "Control Panel"}
-                  </h1>
-                </div>
-              )}
-              {isCollapsed && (
-                <div className="mx-auto pt-3">
-                  <div className="h-7 w-7 bg-primary/10 rounded-md flex items-center justify-center">
-                    <img 
-                      src={app?.logoUrl || window.logoUrl} 
-                      alt="Logo" 
-                      className="h-4 w-4"
-                    />
-                  </div>
-                </div>
-              )}
+      <SidebarContext.Provider value={{ isCollapsed, toggleSidebar: () => setIsCollapsed(!isCollapsed), isMobile, closeMobileSidebar }}>
+        <div className="flex h-screen overflow-hidden bg-white dark:bg-zinc-950">
+          {/* Mobile header */}
+          {isMobile && (
+            <header className="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 h-16 flex items-center px-4">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleSidebar}
-                className={cn(
-                  "h-7 w-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent/50",
-                  isCollapsed && "mx-auto mt-2"
-                )}
+                onClick={() => setIsMobileOpen(!isMobileOpen)}
+                className="h-10 w-10"
               >
-                {isCollapsed ? (
-                  <ChevronRight className="h-3.5 w-3.5" />
-                ) : (
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                )}
+                {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
-            </div>
-
-            {/* Quick Actions */}
-            <QuickActions isCollapsed={isCollapsed} />
-
-            {/* Navigation */}
-            <ScrollArea className="flex-1">
-              <nav className={cn("py-2", isCollapsed ? "px-1" : "px-2")}>
-                {filteredNavItems.map((section, idx) => (
-                  <div key={section.title} className={cn("py-2", idx > 0 && "mt-1")}>
-                    {!isCollapsed && (
-                      <h3 className="px-2 text-xs font-medium text-muted-foreground mb-1">
-                        {section.title}
-                      </h3>
-                    )}
-                    <div className="space-y-px">
-                      {section.items.map((item) => (
-                        <SidebarItem key={item.href} item={item} isCollapsed={isCollapsed} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </nav>
-            </ScrollArea>
-
-            {/* User Profile */}
-            <UserProfile isCollapsed={isCollapsed} />
-          </aside>
-
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Top Bar */}
-            <header className="bg-background border-b h-14 flex items-center px-4 gap-4">
-              <div className="flex items-center">
-                <h2 className="text-sm font-medium">{getCurrentPageTitle()}</h2>
+              
+              <div className="flex items-center ml-3">
+                <img 
+                  src="/logo.svg" 
+                  alt="Logo" 
+                  className="h-8 w-8 mr-2"
+                />
+                <h1 className="font-semibold text-lg">
+                  {getCurrentPageTitle()}
+                </h1>
               </div>
               
-              <div className="ml-auto flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                  <Search className="h-4 w-4" />
+              <div className="ml-auto flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={openSearch} 
+                  className="h-10 w-10"
+                >
+                  <Search className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground relative">
-                  <Bell className="h-4 w-4" />
-                  {user.unreadNotifications > 0 && (
-                    <div className="absolute top-1.5 right-1.5 h-1.5 w-1.5 bg-red-500 rounded-full"></div>
-                  )}
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={toggleTheme} 
+                  className="h-10 w-10"
+                >
+                  {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                 </Button>
-                <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 text-muted-foreground">
-                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                </Button>
-                <Separator orientation="vertical" className="h-6 mx-1" />
+                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 p-0">
-                      <img 
-                        src={user.avatar} 
-                        alt={user.name} 
-                        className="h-7 w-7 rounded-full border border-border"
-                      />
+                    <Button variant="ghost" size="icon" className="h-10 w-10 relative rounded-full p-0">
+                      <UserAvatar />
                       {user.unreadNotifications > 0 && (
-                        <div className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-destructive rounded-full border-2 border-background"></div>
+                        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                          {user.unreadNotifications}
+                        </span>
                       )}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel className="flex items-center gap-3 p-3">
-                      <img src={user.avatar} alt={user.name} className="h-9 w-9 rounded-full" />
+                  <DropdownMenuContent className="w-56" align="end">
+                    <DropdownMenuLabel className="flex items-center gap-3 p-3 border-l-4 border-primary">
+                      <UserAvatar size="lg" />
                       <div>
-                        <p className="font-medium text-sm">{user.name}</p>
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                        <p className="font-medium">{user.name}</p>
+                        <p className="text-xs text-muted-foreground">Coins: {user.coins}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer text-sm py-1.5">
-                      <User className="mr-2 h-3.5 w-3.5" />
-                      Profile Settings
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer text-sm py-1.5 relative">
-                      <Bell className="mr-2 h-3.5 w-3.5" />
-                      Notifications
-                      {user.unreadNotifications > 0 && (
-                        <Badge variant="destructive" className="ml-auto">
-                          {user.unreadNotifications}
-                        </Badge>
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer text-sm py-1.5 text-red-600 focus:text-red-600">
-                      <LogOut className="mr-2 h-3.5 w-3.5" />
-                      Sign Out
+                    <DropdownMenuItem asChild>
+                      <Link to="/logout" className="cursor-pointer flex items-center text-red-600">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             </header>
+          )}
 
-            {/* Page Content */}
-            <main className="flex-1 overflow-auto p-6 bg-muted/5">
-              {children || (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center max-w-md">
-                    <div className="h-14 w-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Command className="h-7 w-7 text-primary" />
+          {/* Mobile sidebar overlay */}
+          {isMobile && isMobileOpen && (
+            <div
+              className="fixed inset-0 bg-black/60 z-30 mt-16"
+              onClick={closeMobileSidebar}
+            />
+          )}
+
+          {/* Sidebar */}
+          <aside
+            className={cn(
+              "flex flex-col bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 transition-all duration-300",
+              isMobile 
+                ? cn(
+                  "fixed top-16 left-0 bottom-0 z-40 w-72 transform",
+                  isMobileOpen ? "translate-x-0" : "-translate-x-full"
+                )
+                : cn(
+                  isCollapsed ? "w-[72px]" : "w-[280px]"
+                )
+            )}
+          >
+            {/* Logo and header (desktop only) */}
+            {!isMobile && (
+              <div className={cn(
+                "flex items-center border-b border-zinc-200 dark:border-zinc-800 h-16",
+                isCollapsed ? "justify-center px-3" : "px-6"
+              )}>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                    <img src="/logo.svg" alt="Logo" className="h-6 w-6" />
+                  </div>
+                  
+                  {!isCollapsed && (
+                    <div>
+                      <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Dashboard</h2>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {user.isAdmin ? 'Administration' : 'Hobby'}
+                      </p>
                     </div>
-                    <h2 className="text-xl font-semibold mb-3">Welcome to your Control Panel</h2>
-                    <p className="text-muted-foreground text-sm">
-                      Your workspace is ready. Select an item from the sidebar to explore available features and manage your infrastructure efficiently.
-                    </p>
+                  )}
+                </div>
+                
+                {!isCollapsed && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsCollapsed(true)}
+                    className="h-9 w-9 ml-auto"
+                  >
+                    <ChevronDown className="h-5 w-5 rotate-90" />
+                  </Button>
+                )}
+              </div>
+            )}
+            
+            {/* Search bar (desktop expanded only) */}
+            {!isMobile && !isCollapsed && (
+              <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-sm text-zinc-400 dark:text-zinc-500 font-normal"
+                  onClick={openSearch}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  <span>Search...</span>
+                  <div className="ml-auto flex items-center text-xs border border-zinc-200 dark:border-zinc-700 rounded px-1.5 py-0.5">
+                    <Command className="h-3 w-3 mr-1" />
+                    <span>K</span>
+                  </div>
+                </Button>
+              </div>
+            )}
+
+            {/* Navigation */}
+            <ScrollArea className={cn(
+              "flex-1",
+              isCollapsed ? "px-2 py-2" : "px-4 py-6"
+            )}>
+              <div className="space-y-1">
+                {navItems.map((item, i) => (
+                  <React.Fragment key={i}>
+                    {item.isDropdown ? (
+                      <div className="mb-1">
+                        <SidebarItem 
+                          item={item}
+                          isActive={item.isActive}
+                          isCollapsed={isCollapsed}
+                          onClick={() => {
+                            if (!isCollapsed) {
+                              setExpandedMenu(expandedMenu === i ? null : i);
+                            }
+                          }}
+                        />
+                        
+                        {/* Dropdown menu items */}
+                        {!isCollapsed && expandedMenu === i && item.children && (
+                          <div className="ml-8 mt-1 space-y-1">
+                            {item.children.map((child, j) => (
+                              <Link 
+                                key={j}
+                                to={child.href} 
+                                className={cn(
+                                  "flex items-center py-2 px-3 text-sm rounded-lg",
+                                  child.isActive 
+                                    ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100" 
+                                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                )}
+                                onClick={closeMobileSidebar}
+                              >
+                                <child.icon className={cn("h-4 w-4 mr-2", child.iconColor)} />
+                                <span>{child.title}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <SidebarItem 
+                        item={item}
+                        isActive={item.isActive}
+                        isCollapsed={isCollapsed}
+                      />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </ScrollArea>
+
+            {/* Footer */}
+            {isCollapsed ? (
+              <div className="p-2 mt-auto border-t border-zinc-200 dark:border-zinc-800 flex flex-col items-center">
+                <UserAvatar size="md" />
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsCollapsed(false)}
+                  className="h-9 w-9 mt-2"
+                >
+                  <ChevronDown className="h-5 w-5 -rotate-90" />
+                </Button>
+              </div>
+            ) : (
+              <div className="border-t border-zinc-200 dark:border-zinc-800 p-4">
+                <div className="space-y-2">
+                  {/* Coins Display */}
+                  <div className="flex items-center justify-between px-3 py-2 text-sm bg-zinc-50 dark:bg-zinc-900 rounded-lg">
+                    <div className="flex items-center">
+                      <DollarSign className="h-4 w-4 mr-2 text-amber-500" />
+                      <span className="font-medium text-zinc-700 dark:text-zinc-300">Credits: {user.credits}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Logout */}
+                  <Link to="/logout" className="flex items-center h-10 px-3 text-base text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg">
+                    <LogOut className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Logout</span>
+                  </Link>
+                  
+                  {/* Theme Toggle */}
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <div className="flex items-center">
+                      <Sun className="h-4 w-4 mr-2 text-zinc-500 dark:text-zinc-400" />
+                      <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Light mode</span>
+                    </div>
+                    <ThemeToggle />
                   </div>
                 </div>
-              )}
+              </div>
+            )}
+          </aside>
+
+          {/* Main Content Area */}
+          <div className={cn(
+            "flex-1 flex flex-col overflow-hidden",
+            isMobile && "pt-16"
+          )}>
+            {/* Desktop Header */}
+            {!isMobile && (
+              <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 h-16 flex items-center px-6">
+                <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{getCurrentPageTitle()}</h1>
+                
+                <div className="ml-auto flex items-center gap-3">
+                  <Button 
+                    variant="outline"
+                    className="h-9 flex items-center gap-2 px-3"
+                    onClick={openSearch}
+                  >
+                    <Search className="h-4 w-4 text-zinc-500" />
+                    <span className="text-zinc-700 dark:text-zinc-300">Search</span>
+                    <span className="text-xs text-zinc-400 border border-zinc-200 dark:border-zinc-700 rounded px-1 py-0.5 flex items-center">
+                      <Command className="h-3 w-3 mr-0.5" />
+                      <span>K</span>
+                    </span>
+                  </Button>
+                  
+                  <Button variant="ghost" size="icon" className="h-10 w-10 relative">
+                    <Bell className="h-5 w-5" />
+                    {user.unreadNotifications > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                        {user.unreadNotifications}
+                      </span>
+                    )}
+                  </Button>
+                  
+                  <Separator orientation="vertical" className="h-8 bg-zinc-200 dark:bg-zinc-800" />
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full p-0">
+                        <UserAvatar />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel className="flex items-center gap-3 p-3 border-l-4 border-primary">
+                        <UserAvatar size="lg" />
+                        <div>
+                          <p className="font-medium">{user.name}</p>
+                          <p className="text-xs text-muted-foreground">Credits: {user.credits}</p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
+                        {theme === "dark" ? (
+                          <>
+                            <Sun className="mr-2 h-4 w-4" />
+                            Light Mode
+                          </>
+                        ) : (
+                          <>
+                            <Moon className="mr-2 h-4 w-4" />
+                            Dark Mode
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/logout" className="cursor-pointer text-red-600">
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sign Out
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </header>
+            )}
+
+            {/* Search Modal */}
+            <SearchModal isOpen={isSearchOpen} onClose={closeSearch} />
+
+            {/* Page Content */}
+            <main className="flex-1 overflow-auto p-4 bg-zinc-50 dark:bg-zinc-950">
+              <div className="min-h-[calc(100vh-2rem)] flex-1 rounded-xl bg-white dark:bg-zinc-900 p-6 border border-zinc-200 dark:border-zinc-800">
+                {children}
+              </div>
             </main>
           </div>
         </div>
