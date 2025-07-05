@@ -33,6 +33,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,8 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/queue/stream', [Controllers\QueueStreamController::class, 'stream']);
 
 Route::middleware('guest')->get('/', function () {
     return redirect('login');
@@ -94,6 +97,7 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
     //payments
     Route::get('checkout/{shopProduct}', [PaymentController::class, 'checkOut'])->name('checkout');
     Route::post('payment/pay', [PaymentController::class, 'pay'])->name('payment.pay');
+    Route::get('new/payment/pay', [PaymentController::class, 'pay'])->name('payment.pay');
     Route::get('payment/FreePay/{shopProduct}', [PaymentController::class, 'FreePay'])->name('payment.FreePay');
     Route::get('payment/Cancel', [PaymentController::class, 'Cancel'])->name('payment.Cancel');
 
@@ -221,6 +225,13 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
 
 
     Route::get('/home/{any?}', [HomeController::class, 'react'])->name('home-react');
+
+   // Route::get('/home/checkout/{any?}', [HomeController::class, 'react'])->name('home-react-checkout');
+    Route::get('home/checkout/{shopProduct}', [PaymentController::class, 'checkOut_react'])->name('checkout-react');
+
+    Route::get('/home/admin/{any?}', [HomeController::class, 'react'])->name('home-react-admin');
+
+
 
      Route::get('/php/home', [HomeController::class, 'index'])->name('home');
 });

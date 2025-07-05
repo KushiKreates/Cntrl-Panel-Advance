@@ -81,6 +81,21 @@ class UsefulLinkController extends Controller
     }
 
     /**
+     * Return all useful links as JSON.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getJson(Request $request)
+    {
+        $links = UsefulLink::all();
+        return response()->json([
+            'success' => true,
+            'data' => $links,
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  UsefulLink  $usefullink

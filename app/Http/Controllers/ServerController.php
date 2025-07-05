@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Support\Facades\Validator;
 
+
 class ServerController extends Controller
 {
     private const CREATE_PERMISSION = 'user.server.create';
@@ -210,6 +211,7 @@ class ServerController extends Controller
     private function getServersWithInfo(): \Illuminate\Database\Eloquent\Collection
     {
         $servers = Auth::user()->servers;
+        Log::debug($servers);
 
         foreach ($servers as $server) {
             $serverInfo = $this->pterodactyl->getServerAttributes($server->pterodactyl_id);
@@ -610,4 +612,19 @@ private function createServer(Request $request): ?Server
             'variables' => $variables,
         ]);
     }
+
+    /**
+     * User's servers as a json response.
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function userServersJson(Request $request): \Illuminate\Http\JsonResponse
+{
+    // Retrieve the user's servers along with updated info
+    $servers = $this->getServersWithInfo();
+
+    return response()->json([
+        'servers' => $servers
+    ]);
+}
 }

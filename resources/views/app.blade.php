@@ -37,10 +37,57 @@
             }
         </script>
 
+        <script>
+
+                window.checkoutData = @json([
+            'paymentGateways' => $paymentGateways ?? [],
+            'productIsFree'   => $productIsFree ?? false,
+        ]);
+        </script>
+
+        <script>
+            @if(isset($product))
+                window.checkout = {
+                    product: {
+                        id: "{{ $product->id }}",
+                        type: "{{ strtolower($product->type) == 'credits' ? $credits_display_name : $product->type }}",
+                        quantity: {{ $product->quantity }},
+                        price: {{ $product->price }},
+                        formattedPrice: "{{ $product->formatToCurrency($product->price) }}",
+                        description: @json($product->description),
+                        currency: "{{ $product->currency_code }}",
+                    },
+                    tax: {
+                        percent: {{ $taxpercent }},
+                        value: {{ $taxvalue }},
+                        formattedValue: "{{ $product->formatToCurrency($taxvalue) }}"
+                    },
+                    discount: {
+                        percent: {{ $discountpercent ?? 0 }},
+                        value: {{ $discountvalue ?? 0 }},
+                        formattedValue: "{{ $discountvalue ? $product->formatToCurrency($discountvalue) : '' }}"
+                    },
+                    total: {{ $total }},
+                    isFree: {{ $productIsFree ? 'true' : 'false' }},
+                    isCouponsEnabled: {{ $isCouponsEnabled ? 'true' : 'false' }},
+                };
+            @else
+                window.checkout = [];
+            @endif
+        </script>
+
+
+
+
+
+
         <!-- User's Role --> 
         <script>
             window.userRoles = @json($user_role);
          </script>
+
+
+
 
          
 

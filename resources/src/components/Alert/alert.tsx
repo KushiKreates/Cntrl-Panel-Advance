@@ -49,7 +49,7 @@ const AppAlert: React.FC = () => {
     <div className={`border-l-4 p-4 ${alertClasses} rounded-md my-4`}>
       <div className="flex justify-between items-start">
         <div>
-          <AlertTitle className="font-bold">Alert</AlertTitle>
+          <AlertTitle className="font-bold"></AlertTitle>
           <AlertDescription
             className="mt-1"
             dangerouslySetInnerHTML={{ __html: truncatedMessage }}

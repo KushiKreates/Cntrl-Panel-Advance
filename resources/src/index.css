@@ -14,7 +14,27 @@
     -webkit-text-size-adjust: 100%;
 }
 
+@theme inline {
+  /* define the custom‐property for the animation */
+  --animate-grid: grid 15s linear infinite;
 
+  /* keyframes for “grid” */
+  @keyframes grid {
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+}
+
+/* optional utility if you want a class-based API */
+@layer utilities {
+  .animate-grid {
+    animation: var(--animate-grid);
+  }
+}
 
 @layer base {
   :root {
@@ -86,7 +106,13 @@
         --sidebar-border: 240 3.7% 15.9%;
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
+  .theme {
+    
+        --animate-grid: grid 15s linear infinite;
+    }
 }
+
+
 
 .motd-message img {
   max-width: 200px;
@@ -96,8 +122,6 @@
   margin-right: auto;
 }
 
-
-
 @layer base {
   * {
     @apply border-border;
@@ -106,3 +130,5 @@
     @apply bg-background text-foreground;
     }
 }
+
+

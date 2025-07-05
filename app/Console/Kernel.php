@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('cp:versioncheck:get')->daily();
         $schedule->command('payments:open:clear')->daily();
         $schedule->command('coupons:delete')->daily();
+        $schedule->command('queue:process-servers')->everyMinute();
 
         //log cronjob activity
         $schedule->call(function () {

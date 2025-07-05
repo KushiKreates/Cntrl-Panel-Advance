@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Helpers\ExtensionHelper;
+use App\Helpers\PaymentGateway;
 use App\Models\ShopProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PaymentMethodsController extends Controller
 {
@@ -21,37 +21,39 @@ class PaymentMethodsController extends Controller
             $productId   = $request->query('product_id');
             $shopProduct = ShopProduct::findOrFail($productId);
 
-            $paymentGateways = [];
-            // only load gateways if there's something to pay
+            $methods = [];
+            // only load gateways if product has a payable price
             if ($shopProduct->getTotalPrice() > 0) {
-                $extensions = ExtensionHelper::getAllExtensionsByNamespace('PaymentGateways');
+                $extensions = PaymentGateway::availableFor($shopProduct);
                 foreach ($extensions as $ext) {
                     $name     = basename($ext);
                     $settings = ExtensionHelper::getExtensionSettings($name);
                     if (! $settings->enabled) {
                         continue;
                     }
-                    $gateway            = new \stdClass();
-                    $gateway->name      = ExtensionHelper::getExtensionConfig($name, 'name') ?? $name;
-                    $gateway->image     = asset('images/Extensions/PaymentGateways/' . strtolower($name) . '_logo.png');
-                    $paymentGateways[]  = $gateway;
+                    $gateway = new \stdClass();
+                    // user‐friendly name
+                    $gateway->name  = ExtensionHelper::getExtensionConfig($name, 'name') ?? $name;
+                    // logo path
+                    $gateway->image = asset('images/Extensions/PaymentGateways/' . strtolower($name) . '_logo.png');
+                    $methods[]      = $gateway;
                 }
             }
 
             return response()->json([
-                'paymentGateways' => $paymentGateways,
+                'paymentMethods' => $methods,
             ], 200);
 
-        } catch (ModelNotFoundException $e) {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             Log::warning("PaymentMethodsController: product {$productId} not found");
             return response()->json([
-                'error' => 'Product not found',
+                'error' => 'Product not found'
             ], 404);
 
         } catch (\Exception $e) {
             Log::error("PaymentMethodsController error: " . $e->getMessage());
             return response()->json([
-                'error' => 'Unable to fetch payment methods',
+                'error' => 'Unable to fetch payment methods'
             ], 500);
         }
     }

@@ -1,42 +1,42 @@
 import React from 'react'
-import { Card } from '@/components/ui/card'
-import { CoinsIcon, MessageCircle, Shield } from 'lucide-react'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import SidebarLayout from '@/components/Sidebar/sidebar'
 import ssr from '@/lib/ssr'
 import Http from '@/lib/Http'
 import Motd from '@/components/Motd/motd'
 import Header from '@/components/Cards/header'
 import AppAlert from '@/components/Alert/alert'
+import Links from '@/components/Links/links'
+import ServersList from '@/components/Servers/servers'
 
-// adjust this prop type to whatever shape your `authUser` really has
-interface DashboardProps {
-    user: {
-        id: string
-        name: string
-        credits?: number
-    }
-}
+// Simplify props if needed
+interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
     const user = ssr.get('authUser') 
-
+    const app = ssr.get('App')
     const client = Http.get('/api/motd')
     
     return (
-        <SidebarProvider>
-            <div className="min-h-screen bg-background">
-                <SidebarLayout>
-                    <div className="flex-1">
-                        <main className="p-6">
-                            <Header page="Dashboard" />
-                            <AppAlert/>
-                           <Motd />
-                        </main>
+        <>
+            <Header page="Dashboard" />
+            <AppAlert/>
+            
+               
+                    <Motd />
+                    <div className="md:mb-28">
+                        <h2 className="text-6xl font-bold px-2">Your Servers.</h2>
+                        <p className="px-4 mb-4">Your powerful servers on the internet</p>
+                        <ServersList />
                     </div>
-                </SidebarLayout>
-            </div>
-        </SidebarProvider>
+               
+            
+            <>
+            <h2 className="text-6xl font-bold px-2">Useful Links</h2>
+            <p className="px-3 mb-4">Here are some useful links to help you navigate the application.</p>
+                <Links/>
+
+
+            </>
+        </>
     )
 }
 

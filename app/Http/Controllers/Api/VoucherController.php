@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Support\Facades\Auth;
 
 class VoucherController extends Controller
 {
@@ -147,5 +148,54 @@ class VoucherController extends Controller
         }
 
         return $voucher->users()->paginate($request->query('per_page') ?? 50);
+    }
+
+    /**
+     * Redeem a voucher code.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function redeem(Request $request)
+    {
+        // 1. Validate incoming code
+        $request->validate([
+            'code' => 'required|string|exists:vouchers,code',
+        ]);
+
+        // 2. Lookup voucher
+        $voucher = Voucher::where('code', $request->input('code'))->firstOrFail();
+
+        // 3. Check expiration
+        if ($voucher->expires_at && $voucher->expires_at->isPast()) {
+            return response()->json(['message' => 'Voucher has expired.'], 422);
+        }
+
+        // 4. Check remaining uses
+        if ($voucher->uses < 1) {
+            return response()->json(['message' => 'Voucher has no uses remaining.'], 422);
+        }
+
+        // 5. Get authenticated user
+        $user = $request->user();
+        if (! $user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        // 6. Credit the user (assumes `credits` column on users table)
+        $user->increment('credits', $voucher->credits);
+
+        // 7. Record usage in pivot (if you have a users() relation)
+        $voucher->users()->attach($user->id);
+
+        // 8. Decrement voucher uses
+        $voucher->decrement('uses');
+
+        // 9. Return success payload
+        return response()->json([
+            'success'        => "You have been awarded {$voucher->credits} credits.",
+            'credits_added'  => $voucher->credits,
+            'remaining_uses' => $voucher->uses,
+        ]);
     }
 }

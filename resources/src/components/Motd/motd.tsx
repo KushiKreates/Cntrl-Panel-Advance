@@ -23,7 +23,7 @@ const Motd = () => {
   if (!motd || !motd.enabled) return null
 
   return (
-    <Card className="w-full mb-6 overflow-hidden rounded-xl shadow-2xl dark:bg-stone-950">
+    <Card className="w-full mb-6 overflow-hidden rounded-xl shadow-2xl bg-transparent">
       <CardContent className="p-2">
         <h3 className="text-xl font-bold mb-2"></h3>
         {/* Wrap the MOTD HTML in a container we can style */}
