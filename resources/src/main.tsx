@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './router';
@@ -9,6 +9,7 @@ import 'nprogress/nprogress.css'; // Import NProgress CSS
 
 import { Toaster } from 'sonner';
 import NadhiLoader from './components/Loader/Nadhi.dev';
+import Http from './lib/Http';
 
 // The loader get's hidden when react is ready
 const hideLoadingScreen = () => {
@@ -22,6 +23,12 @@ const hideLoadingScreen = () => {
   }
 };
 
+useEffect(() => {
+  // Initialize CSRF token when app loads
+  Http.initCsrfToken().catch(err => 
+    console.warn('Initial CSRF token fetch failed:', err)
+  )
+}, [])
 /**
  * Prevents full page reloads, its soo fucked up.
  * This is a workaround for Vite's HMR issues.
