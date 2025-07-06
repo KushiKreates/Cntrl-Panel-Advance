@@ -16,33 +16,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Home,
-  Server,
-  LogOut,
-  ChevronDown,
-  Menu,
-  X,
-  Settings,
-  User as UserIcon,
-  Moon,
-  Sun,
-  Coins,
-  Crown,
-  BarChart3,
-  Bell,
-  Search,
-  Command,
-  LucideMonitorUp,
-  LucideKeySquare,
-  LucideShoppingBag,
-  LucideHandCoins,
-  CogIcon,
-  LucideRadio,
-  LucideServerCog,
-  LucideStore,
-  DollarSign,
-  LucideServer,
-} from "lucide-react";
+  IconHome,
+  IconServer,
+  IconLogout,
+  IconChevronDown,
+  IconMenu2,
+  IconX,
+  IconSettings,
+  IconUser,
+  IconMoon,
+  IconSun,
+  IconCoins,
+  IconCrown,
+  IconChartBar,
+  IconBell,
+  IconSearch,
+  IconCommand,
+  IconDeviceDesktop,
+  IconKey,
+  IconShoppingBag,
+  IconHandCoins,
+  IconSettings2,
+  IconRadio,
+  IconServerCog,
+  IconShoppingCart,
+  IconCurrencyDollar,
+  IconServer2,
+  IconChevronRight,
+  IconChevronLeft,
+  IconTicket,
+} from "@tabler/icons-react";
 import ssr from "@/lib/ssr";
 import useSearch from "@/hooks/usesearch";
 
@@ -95,7 +98,7 @@ const SearchModal = ({ isOpen, onClose }) => {
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center border-b border-zinc-200 dark:border-zinc-800 p-4">
-          <Search className="h-5 w-5 text-zinc-400 mr-3" />
+          <IconSearch className="h-5 w-5 text-zinc-400 mr-3" />
           <input
             type="text"
             className="flex-1 bg-transparent border-0 focus:ring-0 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-base outline-none"
@@ -200,7 +203,7 @@ const SidebarItem = ({ item, isActive, isCollapsed, onClick, children }) => {
         <span className="flex-1 text-left font-medium">{item.title}</span>
         {item.badge && <Badge className="ml-auto">{item.badge}</Badge>}
         {onClick && (
-          <ChevronDown className={cn(
+          <IconChevronDown className={cn(
             "h-4 w-4 transition-transform",
             isActive ? "transform rotate-180" : ""
           )} />
@@ -210,8 +213,6 @@ const SidebarItem = ({ item, isActive, isCollapsed, onClick, children }) => {
     </div>
   );
 };
-
-
 
 // Theme Toggle Component
 const ThemeToggle = () => {
@@ -236,13 +237,13 @@ const CustomSearchTrigger = ({ onClick }) => {
       )}
       onClick={onClick}
     >
-      <Search className="absolute left-3 h-4 w-4 text-zinc-400 dark:text-zinc-500" />
+      <IconSearch className="absolute left-3 h-4 w-4 text-zinc-400 dark:text-zinc-500" />
       <div 
         className="h-9 pl-9 pr-4 py-2 w-full text-sm text-zinc-400 dark:text-zinc-500 flex items-center justify-between"
       >
         <span>Search...</span>
         <span className="text-xs border border-zinc-200 dark:border-zinc-700 rounded px-1.5 py-0.5 flex items-center">
-          <Command className="h-3 w-3 mr-1" />
+          <IconCommand className="h-3 w-3 mr-1" />
           <span>K</span>
         </span>
       </div>
@@ -270,6 +271,20 @@ export default function SidebarLayout() {
 
   const router = useRouter();
   const pathname = router.state.location.pathname;
+
+  // Check if current route is login
+  const isLoginPage = pathname === "/login";
+
+  // If we're on the login page, only render the Outlet without sidebar
+  if (isLoginPage) {
+    return (
+      <>
+        <div className="dark:bg-black bg-white min-h-screen">
+          <Outlet />
+        </div>
+      </>
+    );
+  }
 
   // Check device size
   useEffect(() => {
@@ -305,22 +320,22 @@ export default function SidebarLayout() {
   
   // Get current page title
   const getCurrentPageTitle = () => {
-    if (pathname == '/home') return "Dashboard";
+    if (pathname === "/home") return "Dashboard";
     if (pathname.startsWith("/home/store")) return "Store";
+    if (pathname.startsWith("/home/tickets")) return "ticket";
     if (pathname.startsWith("/home/servers")) return "Servers";
     if (pathname.startsWith("/ticket")) return "Support";
     if (pathname.startsWith("/admin")) return "Admin";
     if (pathname.startsWith("/broadcast/india")) return "India Broadcast";
     if (pathname.startsWith("/broadcast/uk")) return "UK Broadcast";
     if (pathname.match("home/admin/queue")) return "admin-queue";
-    //if (pathname.startsWith("/home/servers")) return "Servers";
     return "Dashboard";
   };
     
   // Get current active tab
-  // Set the active tab in the sidebar based on the current URL path
   const getCurrentTab = () => {
     if (pathname === "/home") return "home";
+    if (pathname == "/home/tickets") return "ticket";
     if (pathname === "/home/store") return "store";
     if (pathname === "/servers") return "panel";
     if (pathname === "/home/servers") return "Servers";
@@ -331,7 +346,7 @@ export default function SidebarLayout() {
     if (pathname.startsWith("/broadcast/uk")) return "broadcast-uk";
     if (pathname == "/admin") return "admin";
     if (pathname.match("/home/admin/queue")) return "admin-queue";
-   //   if (pathname.match("/home/servers")) return "servers";
+   
     return "";
   };
     
@@ -381,23 +396,27 @@ export default function SidebarLayout() {
     {
       title: "Dashboard",
       href: "/home",
-      icon: Home,
+      icon: IconHome,
       isActive: activeTab === "home"
     },
     {
       title: "Store",
       href: "/home/store",
-      icon: LucideStore,
+      icon: IconShoppingCart,
       isActive: activeTab === "store"
     },
     {
       title: "Servers",
       href: "/home/servers",
-      icon: LucideServer,
+      icon: IconServer2,
       isActive: activeTab === "Servers"
     },
-    
-    
+    {
+      title: "Tickets",
+      href: "/home/tickets",
+      icon: IconTicket,
+      isActive: activeTab === "ticket"
+    },
   ];
     
   // Add admin panel if user is admin
@@ -405,14 +424,14 @@ export default function SidebarLayout() {
     navItems.push({
       title: "Admin",
       href: "/admin",
-      icon: CogIcon,
+      icon: IconSettings2,
       iconColor: "text-red-500",
       isActive: activeTab === "admin"
     });
     navItems.push({
       title: "Queue",
       href: "/home/admin/queue",
-      icon: CogIcon,
+      icon: IconSettings2,
       iconColor: "text-red-500",
       isActive: activeTab === "admin-queue"
     });
@@ -431,7 +450,7 @@ export default function SidebarLayout() {
                 onClick={() => setIsMobileOpen(!isMobileOpen)}
                 className="h-10 w-10"
               >
-                {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileOpen ? <IconX className="h-5 w-5" /> : <IconMenu2 className="h-5 w-5" />}
               </Button>
               <div className="flex items-center ml-3">
                 <img src="/logo.svg" alt="Logo" className="h-8 w-8 mr-2" />
@@ -439,10 +458,10 @@ export default function SidebarLayout() {
               </div>
               <div className="ml-auto flex items-center gap-2">
                 <Button variant="ghost" size="icon" onClick={openSearch} className="h-10 w-10">
-                  <Search className="h-5 w-5" />
+                  <IconSearch className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-10 w-10">
-                  {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  {theme === 'dark' ? <IconSun className="h-5 w-5" /> : <IconMoon className="h-5 w-5" />}
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -466,7 +485,7 @@ export default function SidebarLayout() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link to="/logout" className="cursor-pointer flex items-center text-red-600">
-                        <LogOut className="mr-2 h-4 w-4" />
+                        <IconLogout className="mr-2 h-4 w-4" />
                         Sign Out
                       </Link>
                     </DropdownMenuItem>
@@ -508,7 +527,7 @@ export default function SidebarLayout() {
   
                 {!isCollapsed && (
                   <Button variant="ghost" size="icon" onClick={() => setIsCollapsed(true)} className="h-9 w-9 ml-auto">
-                    <ChevronDown className="h-5 w-5 rotate-90" />
+                    <IconChevronLeft className="h-5 w-5" />
                   </Button>
                 )}
               </div>
@@ -517,7 +536,6 @@ export default function SidebarLayout() {
             {/* Desktop Search Bar */}
             {!isMobile && !isCollapsed && (
               <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
-                {/* Use our custom search trigger component */}
                 <CustomSearchTrigger onClick={openSearch} />
               </div>
             )}
@@ -528,7 +546,6 @@ export default function SidebarLayout() {
                 {navItems.map((item, i) => (
                   <React.Fragment key={i}>
                     {item.isDropdown ? (
-                      // Handle dropdown navigation items here
                       <div className="mb-1">
                         <SidebarItem 
                           item={item}
@@ -572,36 +589,45 @@ export default function SidebarLayout() {
                 ))}
               </div>
             </ScrollArea>
-  
-            {/* Footer */}
+
             {isCollapsed ? (
-              <div className="p-2 mt-auto border-t border-zinc-200 dark:border-zinc-800 flex flex-col items-center">
-                <UserAvatar size="md" />
+              <div className="p-2 mt-auto border-t border-zinc-200 dark:border-zinc-800 flex flex-col items-center space-y-3">
+                
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsCollapsed(false)}
-                  className="h-9 w-9 mt-2"
+                  className="h-9 w-9 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                  title="Expand sidebar"
                 >
-                  <ChevronDown className="h-5 w-5 -rotate-90" />
+                  <IconChevronRight className="h-5 w-5" />
                 </Button>
+              </div>
+            ) : null}
+              
+  
+            {/* Footer */}
+            {isCollapsed ? (
+              <div className="p-2 mt-auto border-t border-zinc-200 dark:border-zinc-800 flex flex-col items-center space-y-3">
+                <UserAvatar size="md" />
+                
               </div>
             ) : (
               <div className="border-t border-zinc-200 dark:border-zinc-800 p-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between px-3 py-2 text-sm bg-zinc-50 dark:bg-zinc-900 rounded-lg">
                     <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2 text-amber-500" />
+                      <IconCurrencyDollar className="h-4 w-4 mr-2 text-amber-500" />
                       <span className="font-medium text-zinc-700 dark:text-zinc-300">Credits: {user.credits}</span>
                     </div>
                   </div>
                   <Link to="/logout" className="flex items-center h-10 px-3 text-base text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg">
-                    <LogOut className="h-5 w-5 mr-2" />
+                    <IconLogout className="h-5 w-5 mr-2" />
                     <span className="font-medium">Logout</span>
                   </Link>
                   <div className="flex items-center justify-between px-3 py-2">
                     <div className="flex items-center">
-                      <Sun className="h-4 w-4 mr-2 text-zinc-500 dark:text-zinc-400" />
+                      <IconSun className="h-4 w-4 mr-2 text-zinc-500 dark:text-zinc-400" />
                       <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Light mode</span>
                     </div>
                     <ThemeToggle />
@@ -618,16 +644,9 @@ export default function SidebarLayout() {
               <header className="bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 h-16 flex items-center px-6">
                 <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{getCurrentPageTitle()}</h1>
                 <div className="ml-auto flex items-center gap-3">
-                  <Button variant="outline" className="h-9 flex items-center gap-2 px-3" onClick={openSearch}>
-                    <Search className="h-4 w-4 text-zinc-500" />
-                    <span className="text-zinc-700 dark:text-zinc-300">Search</span>
-                    <span className="text-xs text-zinc-400 border border-zinc-200 dark:border-zinc-700 rounded px-1.5 py-0.5 flex items-center">
-                      <Command className="h-3 w-3 mr-0.5" />
-                      <span>K</span>
-                    </span>
-                  </Button>
+                  
                   <Button variant="ghost" size="icon" className="h-10 w-10 relative">
-                    <Bell className="h-5 w-5" />
+                    <IconBell className="h-5 w-5" />
                     {user.unreadNotifications > 0 && (
                       <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
                         {user.unreadNotifications}
@@ -655,12 +674,12 @@ export default function SidebarLayout() {
                       <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
                         {theme === "dark" ? (
                           <>
-                            <Sun className="mr-2 h-4 w-4" />
+                            <IconSun className="mr-2 h-4 w-4" />
                             Light Mode
                           </>
                         ) : (
                           <>
-                            <Moon className="mr-2 h-4 w-4" />
+                            <IconMoon className="mr-2 h-4 w-4" />
                             Dark Mode
                           </>
                         )}
@@ -668,7 +687,7 @@ export default function SidebarLayout() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <Link to="/logout" className="cursor-pointer text-red-600">
-                          <LogOut className="mr-2 h-4 w-4" />
+                          <IconLogout className="mr-2 h-4 w-4" />
                           Sign Out
                         </Link>
                       </DropdownMenuItem>
@@ -678,7 +697,7 @@ export default function SidebarLayout() {
               </header>
             )}
   
-            {/* Render the hook’s SearchComponent (modal) here */}
+            {/* Render the hook's SearchComponent (modal) here */}
             {HookSearchComponent ? (
               <HookSearchComponent />
             ) : (

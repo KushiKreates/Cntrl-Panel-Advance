@@ -39,6 +39,7 @@ import { motion } from "framer-motion"
 import { Toaster, toast } from "sonner"
 import { RetroGrid } from "@/components/ui/retro-grid"
 import NadhiLoader from "../Loader/Nadhi.dev"
+import { IconBasketBolt, IconShoppingBag, IconShoppingBagPlus } from "@tabler/icons-react"
 
 interface Product {
   id: string
@@ -184,65 +185,72 @@ const Store: React.FC = () => {
     <>
       {/* Sonner’s Toaster must be rendered once in your tree */}
       <Toaster />
-      <div className="pb-12">
+      <div className="pb-12 relative">
+        {/* Header Corner: Shopping Cart Icon */}
+        <div className="absolute top-3 right-1 z-20">
+          
+        <IconShoppingBagPlus className="size-80 right-0" />
+         
+        </div>
+
         {/* Hero Section with RetroGrid */}
         <div className="relative overflow-hidden w-full py-16 text-white shadow-lg">
           <RetroGrid />
           <div className="container mx-auto px-6 relative dark:text-white text-black z-10">
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">
-              Store
-            </h1>
-            <p className="text-xl md:text-2xl max-w-2xl opacity-90 mb-8 drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
-              Upgrade your experience with premium products and services
-            </p>
+        <h1 className="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">
+          Store
+        </h1>
+        <p className="text-xl md:text-2xl max-w-2xl opacity-90 mb-8 drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
+          Upgrade your experience with premium products and services
+        </p>
 
-            {/* Redeem Voucher Button */}
-            <Dialog open={voucherDialogOpen} onOpenChange={setVoucherDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="bg-white/20 hover:bg-white/30 border-0 backdrop-blur-sm flex items-center gap-2"
-                >
-                  <Gift className="h-5 w-5" />
-                  Redeem a Voucher
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl">Redeem Your Voucher</DialogTitle>
-                </DialogHeader>
-                <div className="py-4">
-                  <Label htmlFor="voucher-code" className="text-base">
-                    Enter your voucher code
-                  </Label>
-                  <Input
-                    id="voucher-code"
-                    value={voucherCode}
-                    onChange={(e) => setVoucherCode(e.target.value)}
-                    placeholder="e.g. SUMMER2025"
-                    className="mt-2 text-lg p-6"
-                  />
-                  {voucherStatus.type && (
-                    <div
-                      className={`mt-3 p-3 rounded-md ${
-                        voucherStatus.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
-                      }`}
-                    >
-                      {voucherStatus.message}
-                    </div>
-                  )}
-                </div>
-                <DialogFooter>
-                  <Button variant="ghost" onClick={() => setVoucherDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleRedeemVoucher} size="lg" className="px-8">
-                    Redeem
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+        {/* Redeem Voucher Button */}
+        <Dialog open={voucherDialogOpen} onOpenChange={setVoucherDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+          variant="secondary"
+          size="lg"
+          className="bg-white/20 hover:bg-white/30 border-0 backdrop-blur-sm flex items-center gap-2"
+            >
+          <Gift className="h-5 w-5" />
+          Redeem a Voucher
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+          <DialogTitle className="text-2xl">Redeem Your Voucher</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+          <Label htmlFor="voucher-code" className="text-base">
+            Enter your voucher code
+          </Label>
+          <Input
+            id="voucher-code"
+            value={voucherCode}
+            onChange={(e) => setVoucherCode(e.target.value)}
+            placeholder="e.g. SUMMER2025"
+            className="mt-2 text-lg p-6"
+          />
+          {voucherStatus.type && (
+            <div
+              className={`mt-3 p-3 rounded-md ${
+            voucherStatus.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+              }`}
+            >
+              {voucherStatus.message}
+            </div>
+          )}
+            </div>
+            <DialogFooter>
+          <Button variant="ghost" onClick={() => setVoucherDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleRedeemVoucher} size="lg" className="px-8">
+            Redeem
+          </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
           </div>
         </div>
 

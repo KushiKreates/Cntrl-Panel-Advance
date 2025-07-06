@@ -1,11 +1,299 @@
 {
+  "_chunk-BJ65B6g6.js": {
+    "file": "assets/js/chunk-BJ65B6g6.js",
+    "name": "index",
+    "imports": [
+      "_chunk-CpaldM2f.js",
+      "resources/src/main.tsx"
+    ]
+  },
+  "_chunk-BOsc4ot2.js": {
+    "file": "assets/js/chunk-BOsc4ot2.js",
+    "name": "react-vendor"
+  },
+  "_chunk-C9IVZD6r.js": {
+    "file": "assets/js/chunk-C9IVZD6r.js",
+    "name": "radix-form",
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-PsGeISlR.js"
+    ]
+  },
+  "_chunk-CpaldM2f.js": {
+    "file": "assets/js/chunk-CpaldM2f.js",
+    "name": "index",
+    "imports": [
+      "_chunk-BOsc4ot2.js"
+    ]
+  },
+  "_chunk-Cun6v259.js": {
+    "file": "assets/js/chunk-Cun6v259.js",
+    "name": "label",
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-Sp7XtC9M.js",
+      "resources/src/main.tsx"
+    ]
+  },
+  "_chunk-Cvn0QpQj.js": {
+    "file": "assets/js/chunk-Cvn0QpQj.js",
+    "name": "icons-tabler",
+    "imports": [
+      "_chunk-D2CLwLgv.js"
+    ]
+  },
+  "_chunk-D0hTUc2C.js": {
+    "file": "assets/js/chunk-D0hTUc2C.js",
+    "name": "servers",
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BJ65B6g6.js",
+      "_chunk-gkrLwVmA.js",
+      "_chunk-DsuNDbqi.js",
+      "resources/src/main.tsx",
+      "_chunk-G4j39w-L.js"
+    ]
+  },
+  "_chunk-D2CLwLgv.js": {
+    "file": "assets/js/chunk-D2CLwLgv.js",
+    "name": "tanstack",
+    "imports": [
+      "_chunk-BOsc4ot2.js"
+    ]
+  },
+  "_chunk-DQt_wbaw.js": {
+    "file": "assets/js/chunk-DQt_wbaw.js",
+    "name": "Header",
+    "imports": [
+      "_chunk-D2CLwLgv.js"
+    ]
+  },
+  "_chunk-DsuNDbqi.js": {
+    "file": "assets/js/chunk-DsuNDbqi.js",
+    "name": "alert",
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-Sp7XtC9M.js",
+      "resources/src/main.tsx",
+      "_chunk-PsGeISlR.js",
+      "_chunk-G4j39w-L.js"
+    ]
+  },
+  "_chunk-G4j39w-L.js": {
+    "file": "assets/js/chunk-G4j39w-L.js",
+    "name": "icons-lucide",
+    "imports": [
+      "_chunk-D2CLwLgv.js"
+    ]
+  },
+  "_chunk-PsGeISlR.js": {
+    "file": "assets/js/chunk-PsGeISlR.js",
+    "name": "radix-primitives",
+    "imports": [
+      "_chunk-D2CLwLgv.js"
+    ]
+  },
+  "_chunk-Sp7XtC9M.js": {
+    "file": "assets/js/chunk-Sp7XtC9M.js",
+    "name": "utils"
+  },
+  "_chunk-gkrLwVmA.js": {
+    "file": "assets/js/chunk-gkrLwVmA.js",
+    "name": "card",
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "resources/src/main.tsx"
+    ]
+  },
+  "resources/src/Pages/Activity.tsx": {
+    "file": "assets/js/Activity-F6BqIuiM.js",
+    "name": "Activity",
+    "src": "resources/src/Pages/Activity.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BJ65B6g6.js",
+      "_chunk-DQt_wbaw.js",
+      "_chunk-DsuNDbqi.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-CpaldM2f.js",
+      "resources/src/main.tsx",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-Cvn0QpQj.js"
+    ]
+  },
+  "resources/src/Pages/Admin/Queue.tsx": {
+    "file": "assets/js/Queue-DZF1Nv8i.js",
+    "name": "Queue",
+    "src": "resources/src/Pages/Admin/Queue.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-DQt_wbaw.js",
+      "_chunk-DsuNDbqi.js",
+      "_chunk-gkrLwVmA.js",
+      "resources/src/main.tsx",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-Cvn0QpQj.js"
+    ]
+  },
+  "resources/src/Pages/Auth/login.tsx": {
+    "file": "assets/js/login-BuupXW6G.js",
+    "name": "login",
+    "src": "resources/src/Pages/Auth/login.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "resources/src/main.tsx",
+      "_chunk-G4j39w-L.js",
+      "_chunk-gkrLwVmA.js",
+      "_chunk-Cun6v259.js",
+      "_chunk-CpaldM2f.js",
+      "_chunk-Cvn0QpQj.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-C9IVZD6r.js"
+    ]
+  },
+  "resources/src/Pages/Checkout.tsx": {
+    "file": "assets/js/Checkout-CK4toqM9.js",
+    "name": "Checkout",
+    "src": "resources/src/Pages/Checkout.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BJ65B6g6.js",
+      "_chunk-gkrLwVmA.js",
+      "resources/src/main.tsx",
+      "_chunk-Cun6v259.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-CpaldM2f.js",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-Cvn0QpQj.js"
+    ]
+  },
+  "resources/src/Pages/Home.tsx": {
+    "file": "assets/js/Home-BPs9lyUx.js",
+    "name": "Home",
+    "src": "resources/src/Pages/Home.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BJ65B6g6.js",
+      "_chunk-gkrLwVmA.js",
+      "_chunk-DQt_wbaw.js",
+      "_chunk-DsuNDbqi.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-D0hTUc2C.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-CpaldM2f.js",
+      "resources/src/main.tsx",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-Cvn0QpQj.js"
+    ]
+  },
+  "resources/src/Pages/Servers.tsx": {
+    "file": "assets/js/Servers-CRhWFU1x.js",
+    "name": "Servers",
+    "src": "resources/src/Pages/Servers.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BJ65B6g6.js",
+      "_chunk-DsuNDbqi.js",
+      "_chunk-D0hTUc2C.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-CpaldM2f.js",
+      "resources/src/main.tsx",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-Cvn0QpQj.js",
+      "_chunk-gkrLwVmA.js"
+    ]
+  },
+  "resources/src/Pages/Store.tsx": {
+    "file": "assets/js/Store-CQUq5Phc.js",
+    "name": "Store",
+    "src": "resources/src/Pages/Store.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BJ65B6g6.js",
+      "_chunk-DsuNDbqi.js",
+      "_chunk-gkrLwVmA.js",
+      "resources/src/main.tsx",
+      "_chunk-Cun6v259.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-Cvn0QpQj.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-CpaldM2f.js",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-C9IVZD6r.js"
+    ]
+  },
+  "resources/src/Pages/Ticket.tsx": {
+    "file": "assets/js/Ticket-D1SghCcS.js",
+    "name": "Ticket",
+    "src": "resources/src/Pages/Ticket.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BJ65B6g6.js",
+      "_chunk-DsuNDbqi.js",
+      "_chunk-CpaldM2f.js",
+      "_chunk-gkrLwVmA.js",
+      "resources/src/main.tsx",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-Cvn0QpQj.js"
+    ]
+  },
   "resources/src/main.tsx": {
-    "file": "assets/main-Dj75JWyq.js",
+    "file": "assets/main-Cuy6vPL_.js",
     "name": "main",
     "src": "resources/src/main.tsx",
     "isEntry": true,
+    "imports": [
+      "_chunk-D2CLwLgv.js",
+      "_chunk-BOsc4ot2.js",
+      "_chunk-Sp7XtC9M.js",
+      "_chunk-PsGeISlR.js",
+      "_chunk-C9IVZD6r.js",
+      "_chunk-G4j39w-L.js",
+      "_chunk-Cvn0QpQj.js"
+    ],
+    "dynamicImports": [
+      "resources/src/Pages/Home.tsx",
+      "resources/src/Pages/Store.tsx",
+      "resources/src/Pages/Activity.tsx",
+      "resources/src/Pages/Servers.tsx",
+      "resources/src/Pages/Ticket.tsx",
+      "resources/src/Pages/Checkout.tsx",
+      "resources/src/Pages/Auth/login.tsx",
+      "resources/src/Pages/Admin/Queue.tsx"
+    ],
     "css": [
-      "assets/main-C8FiyuEF.css"
+      "assets/css/main-CB3Bl6y0.css"
     ]
   }
 }

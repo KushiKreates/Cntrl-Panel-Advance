@@ -12,8 +12,7 @@ interface DashboardProps {}
 
 const CheckoutPage: React.FC<DashboardProps> = () => {
     const user = ssr.get('authUser') 
-    const app = ssr.get('App')
-    const client = Http.get('/api/motd')
+    
     //@ts-ignore
    
     

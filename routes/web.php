@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -48,11 +49,20 @@ use App\Http\Controllers;
 
 Route::get('/queue/stream', [Controllers\QueueStreamController::class, 'stream']);
 
+
+Route::middleware('guest')->post('/guest/login', [Controllers\Auth\LoginController::class, 'apiLogin'])
+    ->name('guest.login');
+Route::get('/logout', [Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
+
 Route::middleware('guest')->get('/', function () {
-    return redirect('login');
+    return redirect('/auth/login');
 })->name('welcome');
 
+
+
 Auth::routes(['verify' => true]);
+//Route::get('/auth/login', [HomeController::class, 'react'])->name('home-react-login');
 
 Route::get('/terms/{type}', [TermsController::class, 'index'])->name('terms');
 
@@ -225,6 +235,9 @@ Route::middleware(['auth', 'checkSuspended'])->group(function () {
 
 
     Route::get('/home/{any?}', [HomeController::class, 'react'])->name('home-react');
+
+    Route::get('/home/tickets/{any?}', [HomeController::class, 'react'])->name('home-react');
+    
 
    // Route::get('/home/checkout/{any?}', [HomeController::class, 'react'])->name('home-react-checkout');
     Route::get('home/checkout/{shopProduct}', [PaymentController::class, 'checkOut_react'])->name('checkout-react');

@@ -54,6 +54,11 @@ class LoginController extends Controller
         return $field;
     }
 
+    public function showLoginForm()
+    {
+        return view('auth.app'); // This view should load your React app
+    }
+
     public function login(Request $request, GeneralSettings $general_settings)
     {
 
@@ -101,4 +106,69 @@ class LoginController extends Controller
 
         return $this->sendFailedLoginResponse($request);
     }
+
+    // New API login endpoint that returns JSON responses
+    public function apiLogin(Request $request, GeneralSettings $general_settings)
+    {
+        $validationRules = [
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ];
+        if ($general_settings->recaptcha_version) {
+            switch ($general_settings->recaptcha_version) {
+                case "v2":
+                    $validationRules['g-recaptcha-response'] = ['required', 'recaptcha'];
+                    break;
+                case "v3":
+                    $validationRules['g-recaptcha-response'] = ['required', 'recaptchav3:recaptchathree,0.5'];
+                    break;
+            }
+        }
+        $request->validate($validationRules);
+
+        if (
+            method_exists($this, 'hasTooManyLoginAttempts') &&
+            $this->hasTooManyLoginAttempts($request)
+        ) {
+            $this->fireLockoutEvent($request);
+            return response()->json([
+                'success' => false,
+                'message' => 'Too many login attempts. Please try again later.'
+            ], 429);
+        }
+
+        if ($this->attemptLogin($request)) {
+            $user = Auth::user();
+            $user->last_seen = now();
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'user'    => $user,
+            ]);
+        }
+
+        $this->incrementLoginAttempts($request);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid credentials'
+        ], 422);
+    }
+
+    public function logout(Request $request)
+{
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    if ($request->expectsJson()) {
+        return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    return redirect('/login');
+}
+
 }

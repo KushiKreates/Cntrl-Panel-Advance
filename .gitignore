@@ -36,3 +36,5 @@ public/install/logs/installer.log
 
 /.idea
 cpggdatabase.sql
+rr
+.rr.yaml

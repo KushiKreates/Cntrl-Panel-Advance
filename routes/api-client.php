@@ -8,6 +8,8 @@ use App\Http\Controllers\Client;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\PaymentMethodsController;
 
+use App\Http\Controllers\Admin\TicketsController as AdminTicketsController;
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/client', function (Request $request) {
         return response()->json([
@@ -47,4 +49,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
      */
     Route::get('/servers', [Controllers\ServerController::class, 'userServersJson'])
         ->name('servers.index.json');
+
+    /**
+     * Tickets API
+     * 
+     * API stuff apiGetCategories
+     */
+    Route::get('tickets', [Controllers\TicketsController::class, 'apiIndex'])->name('tickets.api.index');
+    Route::get('tickets/categories', [Controllers\TicketsController::class, 'apiGetCategories'])->name('tickets.api.index');
+    Route::post('tickets', [Controllers\TicketsController::class, 'apiStore'])->name('api.tickets.store');
+    Route::get('/tickets/{ticket_id}', [Controllers\TicketsController::class, 'apiShow'])->name('api.tickets.show');
+    Route::post('/tickets/{ticket_id}/delete', [AdminTicketsController::class, 'apiDelete'])->name('api.tickets.delete');
+    Route::post('/tickets/{ticket_id}/status', [Controllers\TicketsController::class, 'apiChangeStatus'])->name('api.tickets.changeStatus');
 });

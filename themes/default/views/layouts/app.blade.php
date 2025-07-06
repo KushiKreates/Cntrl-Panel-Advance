@@ -41,7 +41,7 @@
         @break
     @endswitch
   @endif
-    @vite('themes/default/sass/app.scss')
+  @vite('themes/default/BlueInfinty/app.css')
 </head>
 @yield('content')
 

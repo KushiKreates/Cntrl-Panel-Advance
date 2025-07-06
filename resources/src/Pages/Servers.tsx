@@ -11,8 +11,7 @@ interface StorePageProps {}
 
 const ServerPage: React.FC<StorePageProps> = () => {
     const user = ssr.get('authUser') 
-    const client = Http.get('/api/motd')
-    const servers = Http.get('/api/servers')
+    
     
    
     

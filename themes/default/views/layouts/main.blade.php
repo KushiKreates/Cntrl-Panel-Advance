@@ -49,7 +49,7 @@
             display: none !important;
         }
     </style>
-    @vite('themes/default/sass/app.scss')
+    @vite('themes/BlueInfinty/app.css')
 </head>
 
 <body class="sidebar-mini layout-fixed dark-mode" style="height: auto;">

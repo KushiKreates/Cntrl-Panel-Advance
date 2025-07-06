@@ -2,6 +2,7 @@ import React from 'react'
 import ssr from '@/lib/ssr'
 import Http from '@/lib/Http'
 import Motd from '@/components/Motd/motd'
+//@ts-ignore
 import Header from '@/components/Cards/header'
 import AppAlert from '@/components/Alert/alert'
 import Links from '@/components/Links/links'
@@ -12,8 +13,7 @@ interface DashboardProps {}
 
 const Dashboard: React.FC<DashboardProps> = () => {
     const user = ssr.get('authUser') 
-    const app = ssr.get('App')
-    const client = Http.get('/api/motd')
+    
     
     return (
         <>

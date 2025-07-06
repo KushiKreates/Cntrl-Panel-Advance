@@ -163,4 +163,7 @@ class HomeController extends Controller
             'user_role' => Auth::user()->roles->pluck('name')->toArray()
         ]);
     }
+
+
+    
 }

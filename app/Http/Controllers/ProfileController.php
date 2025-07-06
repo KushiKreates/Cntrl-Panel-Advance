@@ -45,7 +45,7 @@ class ProfileController extends Controller
 
         $user->delete();
 
-        return redirect('/login')->with('success', __('Account permanently deleted!'));
+        return redirect('/auth/login')->with('success', __('Account permanently deleted!'));
     }
 
     /** Update the specified resource in storage.

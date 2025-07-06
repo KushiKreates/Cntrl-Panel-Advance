@@ -301,4 +301,40 @@ class TicketsController extends Controller
             ->rawColumns(['user', 'status', 'reason', 'created_at', 'actions'])
             ->make(true);
     }
+
+
+
+
+public function apiDelete($ticket_id)
+{
+    // Log all tickets for debugging
+    \Log::info('All tickets:', Ticket::all()->toArray());
+    \Log::info('Requested ticket_id:', ['ticket_id' => $ticket_id]);
+
+    // Find the ticket by ticket_id only (admin can delete any ticket)
+    $ticket = Ticket::where('ticket_id', $ticket_id)->first();
+
+    if (!$ticket) {
+        \Log::warning('Ticket not found for ticket_id:', ['ticket_id' => $ticket_id]);
+        return response()->json([
+            'success' => false,
+            'message' => 'Ticket not found.'
+        ], 404);
+    }
+
+    // Log the found ticket
+    \Log::info('Ticket found:', $ticket->toArray());
+
+    // Delete all comments for this ticket
+    TicketComment::where('ticket_id', $ticket->id)->delete();
+
+    // Delete the ticket itself
+    $ticket->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Ticket deleted successfully',
+        'ticket_id' => $ticket_id
+    ]);
+}
 }

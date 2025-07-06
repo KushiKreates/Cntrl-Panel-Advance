@@ -240,6 +240,8 @@ export default function ServersList() {
     )
   }
 
+  
+
   // Empty state
   if (servers.length === 0) {
     return (

@@ -10,8 +10,7 @@ interface StorePageProps {}
 
 const ActivityLog: React.FC<StorePageProps> = () => {
     const user = ssr.get('authUser') 
-    const client = Http.get('/api/motd')
-    const store = Http.get('/api/store')
+    
     
     return (
         <>

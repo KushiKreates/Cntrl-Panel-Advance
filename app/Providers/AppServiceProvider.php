@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         Schema::defaultStringLength(191);
 
+        error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('discord', \SocialiteProviders\Discord\Provider::class);
         });

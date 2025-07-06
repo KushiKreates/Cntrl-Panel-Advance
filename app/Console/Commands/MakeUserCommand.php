@@ -22,7 +22,7 @@ class MakeUserCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'make:user {--ptero_id=} {--password=} {--force}';
+    protected $signature = 'panel:user {--ptero_id=} {--password=} {--force}';
 
     /**
      * The console command description.
@@ -48,7 +48,23 @@ class MakeUserCommand extends Command
      * @return int
      */
     public function handle(PterodactylSettings $ptero_settings)
+
     {
+
+        $this->line("
+        _   _           _ _     _      _            
+        | \\ | |         | | |   (_)    | |           
+        |  \\| | __ _  __| | |__  _   __| | _____   __
+        | . ` |/ _` |/ _` | '_ \\| | / _` |/ _ \\ \\ / /
+        | |\\  | (_| | (_| | | | | || (_| |  __/\\ V / 
+        |_| \\_|\\__,_|\\__,_|_| |_|_(_)__,_|\\___| \\_/  Create User
+                                                    
+                                                    
+        ");
+        $this->info(str_repeat('=', 70));
+        $this->info('| Before we start make sure you have created this user via pterodactyl');
+        $this->info('| Note that all users made via this command are adminstrators');
+        $this->info(str_repeat('=', 70));
         $this->pterodactyl = new PterodactylClient($ptero_settings);
         $ptero_id = $this->option('ptero_id') ?? $this->ask('Please specify your Pterodactyl ID.');
         $password = $this->option('password') ?? $this->secret('Please specify your password.');
