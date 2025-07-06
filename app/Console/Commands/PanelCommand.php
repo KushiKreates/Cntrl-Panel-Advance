@@ -41,9 +41,10 @@ class PanelCommand extends Command
         $this->info('Ctrl Panel Command Help:');
         $this->line('');
         $this->line('  panel:info         Show this ASCII art and help info');
-        $this->line('  panel:user          Create a new user (with options for admin, email, etc)');
-         $this->line(' panel:update           Automatically Update your panel.');
-        $this->line('  inspire            Show an inspiring quote');
+        $this->line('  panel:user         Create a new user (with options for admin, email, etc)');
+        $this->line('  panel:update       Automatically Update your panel.');
+        $this->line('  panel:env          Backup the .env in case of errors while installing themes and etc');
+        $this->line('  inspire            Just run it!');
         $this->line('');
         $ctrlVar = env('CTRL_VAR');
         if ($ctrlVar) {
